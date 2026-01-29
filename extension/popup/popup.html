@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FormFill Pro</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="logo">
+        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 11l3 3L22 4" />
+          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+        </svg>
+        <span class="logo-text">FormFill Pro</span>
+      </div>
+      <div class="privacy-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+        </svg>
+        <span>Local Only</span>
+      </div>
+    </header>
+
+    <nav class="tabs">
+      <button class="tab active" data-tab="fill">Fill</button>
+      <button class="tab" data-tab="profile">Profile</button>
+      <button class="tab" data-tab="data">Data</button>
+      <button class="tab" data-tab="templates">Templates</button>
+      <button class="tab" data-tab="settings">Settings</button>
+    </nav>
+
+    <main class="content">
+      <section id="fill-tab" class="tab-content active">
+        <div class="fill-mode-section">
+          <div class="section-header">
+            <h3>Fill Mode</h3>
+          </div>
+          <div class="fill-mode-selector" id="fill-mode-selector">
+            <button class="mode-btn" data-mode="quick" title="Random fake data for testing">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+              </svg>
+              <span class="mode-name">Quick</span>
+              <span class="mode-desc">Random data</span>
+            </button>
+            <button class="mode-btn active" data-mode="smart" title="Smart templates with your profile">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+              </svg>
+              <span class="mode-name">Smart</span>
+              <span class="mode-desc">Templates + profile</span>
+            </button>
+            <button class="mode-btn" data-mode="ai" id="ai-mode-btn" title="AI-generated custom responses">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2a4 4 0 0 1 4 4v2a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z" />
+                <path d="M16 14a4 4 0 0 1 4 4v4H4v-4a4 4 0 0 1 4-4h8z" />
+                <circle cx="9" cy="8" r="1" />
+                <circle cx="15" cy="8" r="1" />
+              </svg>
+              <span class="mode-name">AI</span>
+              <span class="mode-desc">Custom responses</span>
+              <span class="mode-badge" id="ai-mode-badge">Setup</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="fill-section">
+          <button id="fill-all-btn" class="btn btn-primary btn-large">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+              <polyline points="22 4 12 14.01 9 11.01" />
+            </svg>
+            <span id="fill-btn-text">Fill All Forms</span>
+          </button>
+          <button id="open-widget-btn" class="btn btn-secondary btn-large" title="Open a floating widget on the page">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+              <path d="M9 3v18" />
+              <path d="M14 9l3 3-3 3" />
+            </svg>
+            <span>Open Widget on Page</span>
+          </button>
+          <p class="help-text" id="fill-help-text">Smart-fill forms with contextual responses based on your profile</p>
+        </div>
+
+        <div class="field-detection">
+          <div class="section-header">
+            <h3>Detected Fields</h3>
+            <button id="refresh-fields" class="btn-icon" title="Refresh">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="23 4 23 10 17 10" />
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+              </svg>
+            </button>
+          </div>
+          <div id="fields-list" class="fields-list">
+            <div class="loading">Scanning page...</div>
+          </div>
+        </div>
+
+        <div id="swagger-section" class="swagger-section hidden">
+          <div class="section-header swagger-header">
+            <div class="swagger-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+                <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+              </svg>
+              <span>Swagger UI Detected</span>
+            </div>
+          </div>
+          <button id="fill-swagger-btn" class="btn btn-swagger btn-large">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="16 18 22 12 16 6" />
+              <polyline points="8 6 2 12 8 18" />
+              <line x1="12" y1="2" x2="12" y2="22" />
+            </svg>
+            Fill API Request Bodies
+          </button>
+          <p class="help-text">Generate realistic JSON data for expanded API operations</p>
+          <div id="swagger-operations" class="swagger-operations"></div>
+        </div>
+
+        <div class="quick-actions">
+          <h3>Quick Fill</h3>
+          <div class="quick-buttons">
+            <button class="quick-btn" data-type="email">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                <polyline points="22,6 12,13 2,6" />
+              </svg>
+              Email
+            </button>
+            <button class="quick-btn" data-type="phone">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path
+                  d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+              </svg>
+              Phone
+            </button>
+            <button class="quick-btn" data-type="address">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+              Address
+            </button>
+            <button class="quick-btn" data-type="name">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+              Name
+            </button>
+            <button class="quick-btn" data-type="password">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+              Password
+            </button>
+            <button class="quick-btn" data-type="card">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+                <line x1="1" y1="10" x2="23" y2="10" />
+              </svg>
+              Card
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section id="profile-tab" class="tab-content">
+        <div class="profile-completeness" id="profile-completeness">
+          <div class="completeness-bar">
+            <div class="completeness-fill" id="completeness-fill" style="width: 0%"></div>
+          </div>
+          <span class="completeness-text"><span id="completeness-percent">0</span>% complete</span>
+        </div>
+
+        <div class="accordion-container">
+          <div class="accordion-item" data-section="personal">
+            <button class="accordion-header" type="button">
+              <div class="accordion-header-content">
+                <svg class="accordion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+                <div class="accordion-header-text">
+                  <span class="accordion-title">Personal Info</span>
+                  <span class="accordion-subtitle" id="personal-preview">Name, email, phone</span>
+                </div>
+              </div>
+              <svg class="accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            <div class="accordion-content">
+              <div class="profile-fields">
+                <div class="profile-field">
+                  <label for="profile-firstName">First Name</label>
+                  <input type="text" id="profile-firstName" placeholder="John">
+                </div>
+                <div class="profile-field">
+                  <label for="profile-lastName">Last Name</label>
+                  <input type="text" id="profile-lastName" placeholder="Doe">
+                </div>
+                <div class="profile-field full-width">
+                  <label for="profile-email">Email</label>
+                  <input type="email" id="profile-email" placeholder="john.doe@email.com">
+                </div>
+                <div class="profile-field full-width">
+                  <label for="profile-phone">Phone</label>
+                  <input type="tel" id="profile-phone" placeholder="+1 (555) 123-4567">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item" data-section="address">
+            <button class="accordion-header" type="button">
+              <div class="accordion-header-content">
+                <svg class="accordion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+                <div class="accordion-header-text">
+                  <span class="accordion-title">Address</span>
+                  <span class="accordion-subtitle" id="address-preview">Location details</span>
+                </div>
+              </div>
+              <svg class="accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            <div class="accordion-content">
+              <div class="profile-fields">
+                <div class="profile-field full-width">
+                  <label for="profile-address">Street Address</label>
+                  <input type="text" id="profile-address" placeholder="123 Main Street">
+                </div>
+                <div class="profile-field">
+                  <label for="profile-city">City</label>
+                  <input type="text" id="profile-city" placeholder="San Francisco">
+                </div>
+                <div class="profile-field">
+                  <label for="profile-state">State/Province</label>
+                  <input type="text" id="profile-state" placeholder="CA">
+                </div>
+                <div class="profile-field">
+                  <label for="profile-zipCode">ZIP/Postal Code</label>
+                  <input type="text" id="profile-zipCode" placeholder="94102">
+                </div>
+                <div class="profile-field">
+                  <label for="profile-country">Country</label>
+                  <select id="profile-country">
+                    <option value="">Select country</option>
+                    <option value="United States">United States</option>
+                    <option value="Canada">Canada</option>
+                    <option value="United Kingdom">United Kingdom</option>
+                    <option value="Australia">Australia</option>
+                    <option value="Germany">Germany</option>
+                    <option value="France">France</option>
+                    <option value="India">India</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item" data-section="professional">
+            <button class="accordion-header" type="button">
+              <div class="accordion-header-content">
+                <svg class="accordion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+                </svg>
+                <div class="accordion-header-text">
+                  <span class="accordion-title">Professional</span>
+                  <span class="accordion-subtitle" id="professional-preview">Role, company, skills</span>
+                </div>
+              </div>
+              <svg class="accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            <div class="accordion-content">
+              <div class="profile-fields">
+                <div class="profile-field">
+                  <label for="profile-title">Current Title</label>
+                  <input type="text" id="profile-title" placeholder="Software Engineer">
+                </div>
+                <div class="profile-field">
+                  <label for="profile-company">Company</label>
+                  <input type="text" id="profile-company" placeholder="Acme Inc">
+                </div>
+                <div class="profile-field">
+                  <label for="profile-experience">Years Experience</label>
+                  <input type="text" id="profile-experience" placeholder="5">
+                </div>
+                <div class="profile-field">
+                  <label for="profile-industry">Industry</label>
+                  <select id="profile-industry">
+                    <option value="">Select industry</option>
+                    <option value="technology">Technology</option>
+                    <option value="healthcare">Healthcare</option>
+                    <option value="finance">Finance</option>
+                    <option value="marketing">Marketing</option>
+                    <option value="sales">Sales</option>
+                    <option value="education">Education</option>
+                    <option value="design">Design</option>
+                    <option value="operations">Operations</option>
+                    <option value="legal">Legal</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                <div class="profile-field full-width">
+                  <label for="profile-skills">Key Skills (comma separated)</label>
+                  <input type="text" id="profile-skills" placeholder="JavaScript, React, Node.js">
+                </div>
+                <div class="profile-field full-width">
+                  <label for="profile-linkedIn">LinkedIn URL</label>
+                  <input type="url" id="profile-linkedIn" placeholder="https://linkedin.com/in/yourprofile">
+                </div>
+                <div class="profile-field full-width">
+                  <label for="profile-portfolio">Portfolio/Website</label>
+                  <input type="url" id="profile-portfolio" placeholder="https://yourwebsite.com">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item" data-section="experience">
+            <button class="accordion-header" type="button">
+              <div class="accordion-header-content">
+                <svg class="accordion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                </svg>
+                <div class="accordion-header-text">
+                  <span class="accordion-title">Work Experience</span>
+                  <span class="accordion-subtitle" id="experience-preview">Add your work history</span>
+                </div>
+              </div>
+              <svg class="accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            <div class="accordion-content">
+              <div id="work-experience-list" class="work-experience-list"></div>
+              <div id="work-experience-form" class="experience-form">
+                <div class="experience-form-row">
+                  <div class="profile-field">
+                    <label>Job Title</label>
+                    <input type="text" id="exp-title" placeholder="Software Engineer">
+                  </div>
+                  <div class="profile-field">
+                    <label>Company</label>
+                    <input type="text" id="exp-company" placeholder="Acme Inc">
+                  </div>
+                </div>
+                <div class="experience-form-row">
+                  <div class="profile-field">
+                    <label>Location</label>
+                    <input type="text" id="exp-location" placeholder="San Francisco, CA">
+                  </div>
+                </div>
+                <div class="experience-form-row">
+                  <div class="profile-field">
+                    <label>Start Date</label>
+                    <input type="text" id="exp-start" placeholder="Jan 2020">
+                  </div>
+                  <div class="profile-field">
+                    <label>End Date</label>
+                    <input type="text" id="exp-end" placeholder="Present">
+                  </div>
+                </div>
+                <div class="profile-field full-width">
+                  <label>Description</label>
+                  <textarea id="exp-description" rows="2"
+                    placeholder="Brief description of your role and achievements..."></textarea>
+                </div>
+                <button class="btn btn-secondary btn-small" id="add-experience-btn">+ Add Experience</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item" data-section="education">
+            <button class="accordion-header" type="button">
+              <div class="accordion-header-content">
+                <svg class="accordion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                  <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5" />
+                </svg>
+                <div class="accordion-header-text">
+                  <span class="accordion-title">Education</span>
+                  <span class="accordion-subtitle" id="education-preview">Add your education</span>
+                </div>
+              </div>
+              <svg class="accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            <div class="accordion-content">
+              <div id="education-list" class="education-list"></div>
+              <div id="education-form" class="education-form">
+                <div class="education-form-row">
+                  <div class="profile-field">
+                    <label>Degree</label>
+                    <input type="text" id="edu-degree" placeholder="Bachelor of Science">
+                  </div>
+                  <div class="profile-field">
+                    <label>Field of Study</label>
+                    <input type="text" id="edu-field" placeholder="Computer Science">
+                  </div>
+                </div>
+                <div class="education-form-row">
+                  <div class="profile-field">
+                    <label>School/University</label>
+                    <input type="text" id="edu-school" placeholder="Stanford University">
+                  </div>
+                  <div class="profile-field">
+                    <label>Graduation Year</label>
+                    <input type="text" id="edu-year" placeholder="2020">
+                  </div>
+                </div>
+                <div class="education-form-row">
+                  <div class="profile-field">
+                    <label>Start Date</label>
+                    <input type="text" id="edu-start" placeholder="Sep 2016">
+                  </div>
+                  <div class="profile-field">
+                    <label>End Date</label>
+                    <input type="text" id="edu-end" placeholder="May 2020">
+                  </div>
+                </div>
+                <button class="btn btn-secondary btn-small" id="add-education-btn">+ Add Education</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item" data-section="summary">
+            <button class="accordion-header" type="button">
+              <div class="accordion-header-content">
+                <svg class="accordion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                  <line x1="16" y1="13" x2="8" y2="13" />
+                  <line x1="16" y1="17" x2="8" y2="17" />
+                </svg>
+                <div class="accordion-header-text">
+                  <span class="accordion-title">Career Summary</span>
+                  <span class="accordion-subtitle" id="summary-preview">Professional overview</span>
+                </div>
+              </div>
+              <svg class="accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            <div class="accordion-content">
+              <div class="profile-fields">
+                <div class="profile-field full-width">
+                  <label for="profile-summary">Professional Summary</label>
+                  <textarea id="profile-summary" rows="3"
+                    placeholder="Brief description of your professional background..."></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item accordion-item-highlight" data-section="applicationQuestions">
+            <button class="accordion-header" type="button">
+              <div class="accordion-header-content">
+                <svg class="accordion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                  <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+                <div class="accordion-header-text">
+                  <span class="accordion-title">Application Questions</span>
+                  <span class="accordion-subtitle" id="appq-preview">Common job application answers</span>
+                </div>
+                <span class="badge-new">Auto-Fill</span>
+              </div>
+              <svg class="accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            <div class="accordion-content">
+              <p class="ai-section-desc">Set your answers once, and they'll auto-fill across all job applications.</p>
+
+              <div class="appq-category" data-category="workAuthorization">
+                <h4 class="appq-category-title">Work Authorization</h4>
+                <div class="profile-fields">
+                  <div class="profile-field full-width">
+                    <label for="appq-authorizedToWork">Legally authorized to work in the US</label>
+                    <select id="appq-authorizedToWork">
+                      <option value="">Not set</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
+                  <div class="profile-field full-width">
+                    <label for="appq-requiresSponsorship">Currently require visa sponsorship</label>
+                    <select id="appq-requiresSponsorship">
+                      <option value="">Not set</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
+                  <div class="profile-field full-width">
+                    <label for="appq-futureSponsorship">Will require sponsorship in the future</label>
+                    <select id="appq-futureSponsorship">
+                      <option value="">Not set</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="appq-category" data-category="employmentHistory">
+                <h4 class="appq-category-title">Employment History</h4>
+                <div class="profile-fields">
+                  <div class="profile-field full-width">
+                    <label for="appq-currentlyEmployedAtCompany">Currently work at this company (default)</label>
+                    <select id="appq-currentlyEmployedAtCompany">
+                      <option value="">Not set</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No" selected>No</option>
+                    </select>
+                  </div>
+                  <div class="profile-field full-width">
+                    <label for="appq-previouslyEmployedAtCompany">Previously worked at company (default)</label>
+                    <select id="appq-previouslyEmployedAtCompany">
+                      <option value="">Not set</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No" selected>No</option>
+                    </select>
+                  </div>
+                  <div class="profile-field full-width">
+                    <label for="appq-previousGovernmentEmployee">Previously worked for government</label>
+                    <select id="appq-previousGovernmentEmployee">
+                      <option value="">Not set</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="appq-category" data-category="demographics">
+                <h4 class="appq-category-title">Demographics & Age</h4>
+                <div class="profile-fields">
+                  <div class="profile-field">
+                    <label for="appq-isOver18">At least 18 years old</label>
+                    <select id="appq-isOver18">
+                      <option value="">Not set</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
+                  <div class="profile-field">
+                    <label for="appq-isOver21">At least 21 years old</label>
+                    <select id="appq-isOver21">
+                      <option value="">Not set</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
+                  <div class="profile-field">
+                    <label for="appq-veteranStatus">Veteran status</label>
+                    <select id="appq-veteranStatus">
+                      <option value="">Not set</option>
+                      <option value="Yes">Yes, I am a veteran</option>
+                      <option value="No">No</option>
+                      <option value="Prefer not to say">Prefer not to say</option>
+                    </select>
+                  </div>
+                  <div class="profile-field">
+                    <label for="appq-militarySpouse">Military spouse/partner</label>
+                    <select id="appq-militarySpouse">
+                      <option value="">Not set</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
+                  <div class="profile-field">
+                    <label for="appq-disabilityStatus">Disability status</label>
+                    <select id="appq-disabilityStatus">
+                      <option value="">Not set</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                      <option value="Prefer not to say">Prefer not to say</option>
+                    </select>
+                  </div>
+                  <div class="profile-field">
+                    <label for="appq-gender">Gender (EEO)</label>
+                    <select id="appq-gender">
+                      <option value="">Not set</option>
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                      <option value="Non-binary">Non-binary</option>
+                      <option value="Prefer not to say">Prefer not to say</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="appq-category" data-category="compensation">
+                <h4 class="appq-category-title">Compensation & Expectations</h4>
+                <div class="profile-fields">
+                  <div class="profile-field">
+                    <label for="appq-salaryExpectation">Expected salary range</label>
+                    <input type="text" id="appq-salaryExpectation" placeholder="$80,000 - $100,000">
+                  </div>
+                  <div class="profile-field">
+                    <label for="appq-hourlyRate">Expected hourly rate</label>
+                    <input type="text" id="appq-hourlyRate" placeholder="$50/hour">
+                  </div>
+                </div>
+              </div>
+
+              <div class="appq-category" data-category="availability">
+                <h4 class="appq-category-title">Availability & Work Preferences</h4>
+                <div class="profile-fields">
+                  <div class="profile-field">
+                    <label for="appq-startDate">Available start date</label>
+                    <input type="text" id="appq-startDate" placeholder="Immediately">
+                  </div>
+                  <div class="profile-field">
+                    <label for="appq-noticePeriod">Notice period required</label>
+                    <input type="text" id="appq-noticePeriod" placeholder="2 weeks">
+                  </div>
+                  <div class="profile-field">
+                    <label for="appq-willingToRelocate">Willing to relocate</label>
+                    <select id="appq-willingToRelocate">
+                      <option value="">Not set</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                      <option value="Maybe">Maybe / Depends</option>
+                    </select>
+                  </div>
+                  <div class="profile-field">
+                    <label for="appq-canWorkRemote">Can work remotely</label>
+                    <select id="appq-canWorkRemote">
+                      <option value="">Not set</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
+                  <div class="profile-field">
+                    <label for="appq-canWorkOnsite">Can work on-site</label>
+                    <select id="appq-canWorkOnsite">
+                      <option value="">Not set</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
+                  <div class="profile-field">
+                    <label for="appq-canWorkHybrid">Can work hybrid</label>
+                    <select id="appq-canWorkHybrid">
+                      <option value="">Not set</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
+                  <div class="profile-field">
+                    <label for="appq-availableForTravel">Available for business travel</label>
+                    <select id="appq-availableForTravel">
+                      <option value="">Not set</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
+                  <div class="profile-field">
+                    <label for="appq-travelPercentage">Travel percentage acceptable</label>
+                    <input type="text" id="appq-travelPercentage" placeholder="Up to 25%">
+                  </div>
+                </div>
+              </div>
+
+              <div class="appq-category" data-category="background">
+                <h4 class="appq-category-title">Background & Compliance</h4>
+                <div class="profile-fields">
+                  <div class="profile-field">
+                    <label for="appq-backgroundCheck">Consent to background check</label>
+                    <select id="appq-backgroundCheck">
+                      <option value="">Not set</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
+                  <div class="profile-field">
+                    <label for="appq-drugTest">Consent to drug test</label>
+                    <select id="appq-drugTest">
+                      <option value="">Not set</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
+                  <div class="profile-field">
+                    <label for="appq-hasConvictions">Criminal convictions</label>
+                    <select id="appq-hasConvictions">
+                      <option value="">Not set</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
+                  <div class="profile-field">
+                    <label for="appq-disciplinaryActions">Professional disciplinary actions</label>
+                    <select id="appq-disciplinaryActions">
+                      <option value="">Not set</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
+                  <div class="profile-field full-width">
+                    <label for="appq-governmentExclusion">Excluded from government programs</label>
+                    <select id="appq-governmentExclusion">
+                      <option value="">Not set</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="appq-category" data-category="licenses">
+                <h4 class="appq-category-title">Licenses & Certifications</h4>
+                <div class="profile-fields">
+                  <div class="profile-field">
+                    <label for="appq-hasDriversLicense">Valid driver's license</label>
+                    <select id="appq-hasDriversLicense">
+                      <option value="">Not set</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
+                  <div class="profile-field">
+                    <label for="appq-hasProfessionalLicense">Professional license</label>
+                    <select id="appq-hasProfessionalLicense">
+                      <option value="">Not set</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
+                  <div class="profile-field full-width">
+                    <label for="appq-hasSecurityClearance">Security clearance</label>
+                    <select id="appq-hasSecurityClearance">
+                      <option value="">Not set</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                      <option value="Not applicable">Not applicable</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="appq-category" data-category="communication">
+                <h4 class="appq-category-title">Communication & Referral</h4>
+                <div class="profile-fields">
+                  <div class="profile-field">
+                    <label for="appq-textAuthorization">Authorize text messages</label>
+                    <select id="appq-textAuthorization">
+                      <option value="">Not set</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
+                  <div class="profile-field">
+                    <label for="appq-emailAuthorization">Authorize email contact</label>
+                    <select id="appq-emailAuthorization">
+                      <option value="">Not set</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
+                  <div class="profile-field">
+                    <label for="appq-howDidYouHear">How did you hear about us (default)</label>
+                    <input type="text" id="appq-howDidYouHear" placeholder="LinkedIn, Indeed, Company Website...">
+                  </div>
+                  <div class="profile-field">
+                    <label for="appq-referralName">Employee referral name</label>
+                    <input type="text" id="appq-referralName" placeholder="Leave blank if none">
+                  </div>
+                  <div class="profile-field full-width">
+                    <label for="appq-previousApplicant">Previously applied to this company (default)</label>
+                    <select id="appq-previousApplicant">
+                      <option value="">Not set</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="appq-actions">
+                <button id="appq-set-defaults" class="btn btn-secondary btn-small">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path
+                      d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83" />
+                  </svg>
+                  Set Common Defaults
+                </button>
+                <button id="appq-clear-all" class="btn btn-secondary btn-small">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6" />
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                  </svg>
+                  Clear All
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item" data-section="documents">
+            <button class="accordion-header" type="button">
+              <div class="accordion-header-content">
+                <svg class="accordion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="17 8 12 3 7 8" />
+                  <line x1="12" y1="3" x2="12" y2="15" />
+                </svg>
+                <div class="accordion-header-text">
+                  <span class="accordion-title">Documents</span>
+                  <span class="accordion-subtitle" id="documents-preview">Resume, cover letter</span>
+                </div>
+              </div>
+              <svg class="accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            <div class="accordion-content">
+              <p class="ai-section-desc">Add your resume and cover letter text to use in AI-generated responses.</p>
+              <div class="document-upload-area">
+                <div class="document-item">
+                  <label>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                      <polyline points="14 2 14 8 20 8" />
+                      <line x1="16" y1="13" x2="8" y2="13" />
+                      <line x1="16" y1="17" x2="8" y2="17" />
+                      <polyline points="10 9 9 9 8 9" />
+                    </svg>
+                    Resume / CV
+                  </label>
+                  <div id="resume-file-info"></div>
+                  <textarea id="profile-resume" rows="4"
+                    placeholder="Paste your resume text here or summarize your experience, education, and accomplishments..."></textarea>
+                  <div class="document-actions">
+                    <button class="btn btn-secondary btn-small" id="upload-resume-btn">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="17 8 12 3 7 8" />
+                        <line x1="12" y1="3" x2="12" y2="15" />
+                      </svg>
+                      Upload File
+                    </button>
+                    <span class="upload-hint">File will auto-upload to job applications</span>
+                    <input type="file" id="resume-file-input" accept=".txt,.pdf,.doc,.docx" hidden>
+                  </div>
+                </div>
+                <div class="document-item">
+                  <label>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                      <polyline points="22,6 12,13 2,6" />
+                    </svg>
+                    Cover Letter Template
+                  </label>
+                  <textarea id="profile-coverLetter" rows="4"
+                    placeholder="Write a base cover letter template. Use [COMPANY] and [POSITION] as placeholders..."></textarea>
+                </div>
+                <div class="document-item">
+                  <label>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10" />
+                      <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                      <line x1="12" y1="17" x2="12.01" y2="17" />
+                    </svg>
+                    Additional Notes
+                  </label>
+                  <textarea id="profile-additionalNotes" rows="3"
+                    placeholder="Any other information you want AI to know when generating responses (achievements, projects, preferences)..."></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item accordion-item-highlight" data-section="ai">
+            <button class="accordion-header" type="button">
+              <div class="accordion-header-content">
+                <svg class="accordion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2a4 4 0 0 1 4 4v2a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z" />
+                  <path d="M16 14a4 4 0 0 1 4 4v4H4v-4a4 4 0 0 1 4-4h8z" />
+                  <circle cx="9" cy="8" r="1" />
+                  <circle cx="15" cy="8" r="1" />
+                </svg>
+                <div class="accordion-header-text">
+                  <span class="accordion-title">AI Settings</span>
+                  <span class="accordion-subtitle" id="ai-preview">Configure API key</span>
+                </div>
+                <span class="badge-byok">BYOK</span>
+              </div>
+              <svg class="accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            <div class="accordion-content">
+              <p class="ai-section-desc">Add your own API key to enable AI-generated responses. Your key is stored
+                locally.</p>
+              <div class="profile-fields">
+                <div class="profile-field full-width">
+                  <label for="ai-provider">AI Provider</label>
+                  <select id="ai-provider">
+                    <option value="openai">OpenAI</option>
+                    <option value="anthropic">Anthropic</option>
+                    <option value="gemini">Google Gemini</option>
+                  </select>
+                </div>
+                <div class="profile-field full-width">
+                  <label for="ai-model">Model</label>
+                  <select id="ai-model"></select>
+                </div>
+                <div class="profile-field full-width">
+                  <label for="ai-api-key">API Key</label>
+                  <div class="api-key-input">
+                    <input type="password" id="ai-api-key" placeholder="sk-...">
+                    <button class="btn-icon toggle-key-visibility" id="toggle-key-visibility" type="button">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+                <div class="profile-field full-width">
+                  <button id="test-ai-connection" class="btn btn-secondary btn-block">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                    </svg>
+                    Test Connection
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-actions">
+          <button id="save-profile-btn" class="btn btn-primary btn-block">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+              <polyline points="17 21 17 13 7 13 7 21" />
+              <polyline points="7 3 7 8 15 8" />
+            </svg>
+            Save Profile
+          </button>
+        </div>
+      </section>
+
+      <section id="data-tab" class="tab-content">
+        <div class="data-source-toggle">
+          <label class="source-option">
+            <input type="radio" name="data-source" value="generated" checked>
+            <span class="source-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path
+                  d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83" />
+              </svg>
+              Auto Generate
+            </span>
+          </label>
+          <label class="source-option">
+            <input type="radio" name="data-source" value="imported">
+            <span class="source-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="16" y1="13" x2="8" y2="13" />
+                <line x1="16" y1="17" x2="8" y2="17" />
+              </svg>
+              From File
+            </span>
+          </label>
+        </div>
+
+        <div id="file-upload-section" class="file-upload-section hidden">
+          <div class="upload-area" id="upload-area">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="17 8 12 3 7 8" />
+              <line x1="12" y1="3" x2="12" y2="15" />
+            </svg>
+            <p>Drop CSV or Excel file here</p>
+            <span>or click to browse</span>
+            <input type="file" id="data-file-input" accept=".csv,.xlsx,.txt" hidden>
+          </div>
+
+          <div id="active-dataset" class="active-dataset hidden">
+            <div class="dataset-header">
+              <div class="dataset-info">
+                <span class="dataset-name" id="dataset-name"></span>
+                <span class="dataset-meta" id="dataset-meta"></span>
+              </div>
+              <button id="clear-dataset" class="btn-icon" title="Remove dataset">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+
+            <div class="row-navigator">
+              <button id="prev-row" class="btn btn-secondary btn-small">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="15 18 9 12 15 6" />
+                </svg>
+              </button>
+              <span class="row-indicator">
+                Row <span id="current-row">1</span> of <span id="total-rows">1</span>
+              </span>
+              <button id="next-row" class="btn btn-secondary btn-small">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+              </button>
+            </div>
+
+            <div class="data-preview" id="data-preview"></div>
+          </div>
+
+          <div id="datasets-list-section" class="datasets-list-section">
+            <div class="section-header">
+              <h3>Saved Datasets</h3>
+            </div>
+            <div id="datasets-list" class="datasets-list">
+              <div class="empty-datasets">No datasets uploaded yet</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="generated-data-info" class="generated-data-info">
+          <div class="info-card">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="16" x2="12" y2="12" />
+              <line x1="12" y1="8" x2="12.01" y2="8" />
+            </svg>
+            <p>Forms will be filled with randomly generated realistic data</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="templates-tab" class="tab-content">
+        <div class="templates-section">
+          <div class="section-header">
+            <h3>Saved Templates</h3>
+            <div class="template-header-actions" style="display: flex; gap: 8px;">
+              <button id="create-template-btn" class="btn btn-primary btn-small">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                New
+              </button>
+              <button id="save-template-btn" class="btn btn-secondary btn-small">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                  <polyline points="17 21 17 13 7 13 7 21" />
+                  <polyline points="7 3 7 8 15 8" />
+                </svg>
+                Capture
+              </button>
+            </div>
+          </div>
+          <p class="template-help">Create custom templates or capture form data from current page</p>
+
+          <div id="templates-list" class="templates-list">
+            <div class="empty-templates">No templates saved yet</div>
+          </div>
+        </div>
+
+        <div class="template-info-card">
+          <div class="info-card">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="16" x2="12" y2="12" />
+              <line x1="12" y1="8" x2="12.01" y2="8" />
+            </svg>
+            <div class="info-content">
+              <p>Templates save field mappings with values for specific sites.</p>
+              <p>Use <strong>New</strong> to create custom templates, or <strong>Capture</strong> to save current page
+                data.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="settings-tab" class="tab-content">
+        <div class="settings-group">
+          <h3>Data Generation</h3>
+          <div class="setting-item">
+            <label>
+              <span>Locale</span>
+              <select id="locale-select">
+                <option value="en-US">English (US)</option>
+                <option value="en-GB">English (UK)</option>
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+                <option value="de">German</option>
+              </select>
+            </label>
+          </div>
+          <div class="setting-item">
+            <label>
+              <span>Password length</span>
+              <input type="number" id="password-length" value="12" min="8" max="32">
+            </label>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <h3>Behavior</h3>
+          <div class="setting-item">
+            <label class="toggle-label">
+              <span>Fill delay (ms)</span>
+              <input type="number" id="fill-delay" value="50" min="0" max="500" step="10">
+            </label>
+          </div>
+          <div class="setting-item">
+            <label class="toggle-label">
+              <input type="checkbox" id="auto-submit" class="toggle">
+              <span>Show fill animation</span>
+            </label>
+          </div>
+          <div class="setting-item">
+            <label class="toggle-label">
+              <input type="checkbox" id="context-menu" class="toggle" checked>
+              <span>Enable context menu</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <h3>Data</h3>
+          <div class="setting-item">
+            <button id="export-templates" class="btn btn-secondary btn-block">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              Export Templates
+            </button>
+          </div>
+          <div class="setting-item">
+            <button id="import-templates" class="btn btn-secondary btn-block">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="17 8 12 3 7 8" />
+                <line x1="12" y1="3" x2="12" y2="15" />
+              </svg>
+              Import Templates
+            </button>
+            <input type="file" id="import-file" accept=".json" hidden>
+          </div>
+          <div class="setting-item danger">
+            <button id="clear-data" class="btn btn-danger btn-block">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6" />
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+              </svg>
+              Clear All Data
+            </button>
+          </div>
+        </div>
+
+        <div class="about-section">
+          <p class="privacy-notice">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+            All data is generated and stored locally. No server uploads, no tracking.
+          </p>
+          <p class="version">FormFill Pro v1.0.0</p>
+        </div>
+      </section>
+    </main>
+
+    <div id="toast" class="toast hidden">
+      <span class="toast-message"></span>
+    </div>
+
+    <div id="template-modal" class="modal-overlay hidden">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 id="template-modal-title">New Template</h3>
+          <button class="modal-close" id="close-template-modal">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="template-form-group">
+            <label for="template-name">Template Name</label>
+            <input type="text" id="template-name" placeholder="e.g., LinkedIn Job Application">
+          </div>
+          <div class="template-form-group">
+            <label for="template-url">URL Pattern (optional)</label>
+            <div class="template-url-input">
+              <input type="text" id="template-url" placeholder="e.g., linkedin.com/jobs">
+              <button class="btn-icon" id="get-current-url" title="Use current page URL">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="2" y1="12" x2="22" y2="12" />
+                  <path
+                    d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="template-fields-editor">
+            <div class="template-fields-header">
+              <h4>Field Values</h4>
+              <button class="btn btn-secondary btn-small" id="add-template-field">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                Add Field
+              </button>
+            </div>
+            <div id="template-fields-container">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" id="cancel-template">Cancel</button>
+          <button class="btn btn-primary" id="save-template-modal">Save Template</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="../lib/smart-analyzer.js"></script>
+  <script src="../lib/response-templates.js"></script>
+  <script src="../lib/user-profile.js"></script>
+  <script src="../lib/ai-provider.js"></script>
+  <script src="../lib/smart-filler.js"></script>
+  <script src="../lib/application-questions.js"></script>
+  <script src="popup.js"></script>
+</body>
+
+</html>

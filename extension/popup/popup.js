@@ -156,7 +156,8 @@ class PopupController {
       'availableForTravel', 'travelPercentage',
       'backgroundCheck', 'drugTest', 'hasConvictions', 'disciplinaryActions', 'governmentExclusion',
       'hasDriversLicense', 'hasProfessionalLicense', 'hasSecurityClearance',
-      'textAuthorization', 'emailAuthorization', 'howDidYouHear', 'referralName', 'previousApplicant'
+      'textAuthorization', 'emailAuthorization', 'howDidYouHear', 'referralName', 'previousApplicant',
+      // 'currentColleague', 'workedAtCvsPast12Months'
     ];
     appqFields.forEach(field => {
       const el = document.getElementById(`appq-${field}`);
@@ -309,7 +310,8 @@ class PopupController {
       'availableForTravel', 'travelPercentage',
       'backgroundCheck', 'drugTest', 'hasConvictions', 'disciplinaryActions', 'governmentExclusion',
       'hasDriversLicense', 'hasProfessionalLicense', 'hasSecurityClearance',
-      'textAuthorization', 'emailAuthorization', 'howDidYouHear', 'referralName', 'previousApplicant'
+      'textAuthorization', 'emailAuthorization', 'howDidYouHear', 'referralName', 'previousApplicant',
+      'currentColleague', 'workedAtCvsPast12Months'
     ];
 
     fields.forEach(field => {
@@ -332,7 +334,8 @@ class PopupController {
       'availableForTravel', 'travelPercentage',
       'backgroundCheck', 'drugTest', 'hasConvictions', 'disciplinaryActions', 'governmentExclusion',
       'hasDriversLicense', 'hasProfessionalLicense', 'hasSecurityClearance',
-      'textAuthorization', 'emailAuthorization', 'howDidYouHear', 'referralName', 'previousApplicant'
+      'textAuthorization', 'emailAuthorization', 'howDidYouHear', 'referralName', 'previousApplicant',
+      'currentColleague', 'workedAtCvsPast12Months'
     ];
 
     this.applicationQuestions = {};
@@ -380,7 +383,9 @@ class PopupController {
       startDate: 'Immediately',
       noticePeriod: '2 weeks',
       travelPercentage: 'Up to 25%',
-      howDidYouHear: 'LinkedIn'
+      howDidYouHear: 'LinkedIn',
+      currentColleague: 'No',
+      workedAtCvsPast12Months: 'No'
     };
 
     Object.keys(defaults).forEach(field => {
@@ -405,7 +410,8 @@ class PopupController {
         'availableForTravel', 'travelPercentage',
         'backgroundCheck', 'drugTest', 'hasConvictions', 'disciplinaryActions', 'governmentExclusion',
         'hasDriversLicense', 'hasProfessionalLicense', 'hasSecurityClearance',
-        'textAuthorization', 'emailAuthorization', 'howDidYouHear', 'referralName', 'previousApplicant'
+        'textAuthorization', 'emailAuthorization', 'howDidYouHear', 'referralName', 'previousApplicant',
+        'currentColleague', 'workedAtCvsPast12Months'
       ];
 
       fields.forEach(field => {

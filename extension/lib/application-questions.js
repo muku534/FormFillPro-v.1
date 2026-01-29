@@ -20,32 +20,45 @@ window.ApplicationQuestions = {
             'employment eligibility',
             'legally permitted to work',
             'proof.*legally authorized',
-            'can you provide proof.*legally able to work'
+            'can you provide proof.*legally able to work',
+            'are you authorized to work',
+            'legal right to work',
+            'permission to work',
+            'verification of your legal right to work'
           ],
           type: 'select',
           defaultAnswer: 'Yes',
           options: ['Yes', 'No']
         },
-        requiresSponsorshipNow: {
+        requiresSponsorship: {
           label: 'Requires visa sponsorship now',
           patterns: [
             'currently require sponsorship',
             'currently require.*visa',
             'currently require.*employment based visa',
             'require sponsorship.*to work for this company',
-            'currently require sponsorship.*in order to work'
+            'currently require sponsorship.*in order to work',
+            'do you now.*require sponsorship',
+            'require visa sponsorship',
+            'need sponsorship',
+            'sponsorship to work',
+            'require sponsorship now'
           ],
           type: 'select',
           defaultAnswer: 'No',
           options: ['Yes', 'No']
         },
-        requiresSponsorshipFuture: {
+        futureSponsorship: {
           label: 'Will require sponsorship in future',
           patterns: [
             'will you in the future require',
             'in the future.*require sponsorship',
             'future.*employment based visa',
-            'will you in the future require sponsorship'
+            'will you in the future require sponsorship',
+            'require sponsorship in the future',
+            'future sponsorship',
+            'require visa sponsorship.*future',
+            'future.*visa support'
           ],
           type: 'select',
           defaultAnswer: 'No',
@@ -72,7 +85,9 @@ window.ApplicationQuestions = {
             'do you currently work at cvs health',
             'do you currently work at cvs pharmacy',
             'do you currently work at aetna',
-            'do you currently work.* subsidiaries'
+            'do you currently work.* subsidiaries',
+            'current employee',
+            'are you a current employee'
           ],
           type: 'select',
           defaultAnswer: 'No',
@@ -93,7 +108,10 @@ window.ApplicationQuestions = {
             'have you ever worked at',
             'have you ever worked',
             'have you ever been employed by cvs health',
-            'ever been employed by.*subsidiaries'
+            'ever been employed by.*subsidiaries',
+            'former employee',
+            'rehire',
+            'previous employment at'
           ],
           type: 'select',
           defaultAnswer: 'No',
@@ -113,7 +131,8 @@ window.ApplicationQuestions = {
             'federal employee',
             'state employee',
             'public sector',
-            'federal.*state or local government entity'
+            'federal.*state or local government entity',
+            'worked for.*federal.*state.*local'
           ],
           type: 'select',
           defaultAnswer: 'No',
@@ -125,18 +144,24 @@ window.ApplicationQuestions = {
             'current colleague',
             'current contractor',
             'currently work for cvs health',
-            'current colleague or contract worker'
+            'current colleague or contract worker',
+            'contract worker',
+            'agency worker',
+            'contingent worker'
           ],
           type: 'select',
           defaultAnswer: 'No',
-          options: ['Yes', 'No']
+          options: ['Yes', 'No', 'Current Colleague', 'Contract Worker']
         },
         workedAtCvsPast12Months: {
           label: 'Worked at CVS in past 12 months',
           patterns: [
             'worked for cvs health.*past 12 months',
             'worked at cvs.*last 12 months',
-            'cvs health.*past year'
+            'cvs health.*past year',
+            'past 12 months',
+            'have you worked at cvs health in the role you are applying to.*past 12 months',
+            'role you are applying to.*past 12 months'
           ],
           type: 'select',
           defaultAnswer: 'No',
@@ -154,7 +179,10 @@ window.ApplicationQuestions = {
             'at least 18 years old',
             'age 18 or older',
             '18 years of age or older',
-            'at least eighteen'
+            'at least eighteen',
+            'are you 18 or older',
+            'over the age of 18',
+            'are you under 18'
           ],
           type: 'select',
           defaultAnswer: 'Yes',
@@ -167,7 +195,9 @@ window.ApplicationQuestions = {
             'at least 21',
             '21 years old',
             'twenty-one years',
-            'over 21'
+            'over 21',
+            'are you 21 or older',
+            '21 years of age or older'
           ],
           type: 'select',
           defaultAnswer: 'Yes',
@@ -184,7 +214,10 @@ window.ApplicationQuestions = {
             'military service',
             'u.s. military',
             'veteran of',
-            'please select the veteran status which most accurately describes how you identify yourself'
+            'please select the veteran status which most accurately describes how you identify yourself',
+            'veteran classification',
+            'protected veteran',
+            'identify as a veteran'
           ],
           type: 'select',
           defaultAnswer: 'No',
@@ -196,7 +229,9 @@ window.ApplicationQuestions = {
             'military spouse',
             'spouse or partner.*serves.*military',
             'spouse or partner of someone who serves',
-            'military family'
+            'military family',
+            'spouse of a veteran',
+            'spouse of an active duty'
           ],
           type: 'select',
           defaultAnswer: 'No',
@@ -209,7 +244,10 @@ window.ApplicationQuestions = {
             'do you have a disability',
             'person with a disability',
             'disabled',
-            'handicap'
+            'handicap',
+            'form cc-305',
+            'voluntary self-identification of disability',
+            'please check one of the boxes below'
           ],
           type: 'select',
           defaultAnswer: 'Prefer not to say',
@@ -222,7 +260,9 @@ window.ApplicationQuestions = {
             'sex',
             'male.*female',
             'identify as',
-            'please select your gender'
+            'please select your gender',
+            'how do you identify',
+            'gender identity'
           ],
           type: 'select',
           defaultAnswer: 'Prefer not to say',
@@ -235,7 +275,10 @@ window.ApplicationQuestions = {
             'ethnicity',
             'ethnic background',
             'racial background',
-            'please select the ethnicity which most accurately describes how you identify yourself'
+            'please select the ethnicity which most accurately describes how you identify yourself',
+            'race/ethnicity',
+            'how do you identify your race',
+            'racial group'
           ],
           type: 'select',
           defaultAnswer: 'Prefer not to say',
@@ -245,7 +288,8 @@ window.ApplicationQuestions = {
           label: 'Hispanic or Latino',
           patterns: [
             'are you hispanic or latino',
-            'hispanic or latino'
+            'hispanic or latino',
+            'ethnicity (hispanic or latino)'
           ],
           type: 'select',
           defaultAnswer: 'No',
@@ -256,7 +300,8 @@ window.ApplicationQuestions = {
           patterns: [
             'country',
             'country of residence',
-            'location country'
+            'location country',
+            'select country'
           ],
           type: 'select',
           defaultAnswer: 'United States',
@@ -279,7 +324,10 @@ window.ApplicationQuestions = {
             'salary requirement',
             'desired compensation',
             'expected compensation',
-            'what is your.*salary'
+            'what is your.*salary',
+            'salary range',
+            'target salary',
+            'annual salary'
           ],
           type: 'text',
           defaultAnswer: '$80,000 - $100,000',
@@ -291,7 +339,8 @@ window.ApplicationQuestions = {
             'hourly rate',
             'hourly expectation',
             'expected.*hourly',
-            'desired hourly'
+            'desired hourly',
+            'hourly pay'
           ],
           type: 'text',
           defaultAnswer: '',
@@ -311,7 +360,9 @@ window.ApplicationQuestions = {
             'available to start',
             'availability date',
             'date available',
-            'when are you available'
+            'when are you available',
+            'what date are you available',
+            'start availability'
           ],
           type: 'text',
           defaultAnswer: 'Immediately',
@@ -324,7 +375,8 @@ window.ApplicationQuestions = {
             'notice required',
             'how much notice',
             'two weeks notice',
-            'required notice'
+            'required notice',
+            'weeks notice'
           ],
           type: 'text',
           defaultAnswer: '2 weeks',
@@ -337,7 +389,8 @@ window.ApplicationQuestions = {
             'open to relocation',
             'relocate for this position',
             'consider relocating',
-            'relocation'
+            'relocation',
+            'willingness to relocate'
           ],
           type: 'select',
           defaultAnswer: 'Yes',
@@ -351,7 +404,8 @@ window.ApplicationQuestions = {
             'work remotely',
             'work from home',
             'telecommute',
-            'remote position'
+            'remote position',
+            'remote option'
           ],
           type: 'select',
           defaultAnswer: 'Yes',
@@ -365,7 +419,8 @@ window.ApplicationQuestions = {
             'work onsite',
             'in-office',
             'office.*position',
-            'on site.*work'
+            'on site.*work',
+            'work in office'
           ],
           type: 'select',
           defaultAnswer: 'Yes',
@@ -378,7 +433,8 @@ window.ApplicationQuestions = {
             'hybrid',
             'hybrid schedule',
             'flexible work',
-            'combination.*remote.*office'
+            'combination.*remote.*office',
+            'hybrid work'
           ],
           type: 'select',
           defaultAnswer: 'Yes',
@@ -392,7 +448,8 @@ window.ApplicationQuestions = {
             'willing to travel',
             'travel required',
             'travel.*percent',
-            'business travel'
+            'business travel',
+            'travel requirements'
           ],
           type: 'select',
           defaultAnswer: 'Yes',
@@ -405,7 +462,8 @@ window.ApplicationQuestions = {
             'travel percentage',
             'percent.*travel',
             'how much travel',
-            '% travel'
+            '% travel',
+            'percentage of travel'
           ],
           type: 'text',
           defaultAnswer: 'Up to 25%',
@@ -423,7 +481,8 @@ window.ApplicationQuestions = {
             'background screening',
             'criminal background',
             'consent to.*background',
-            'authorize.*background'
+            'authorize.*background',
+            'submit to a background check'
           ],
           type: 'select',
           defaultAnswer: 'Yes',
@@ -435,7 +494,8 @@ window.ApplicationQuestions = {
             'drug test',
             'drug screening',
             'substance.*test',
-            'consent to drug'
+            'consent to drug',
+            'submit to a drug test'
           ],
           type: 'select',
           defaultAnswer: 'Yes',
@@ -450,7 +510,8 @@ window.ApplicationQuestions = {
             'misdemeanor',
             'criminal record',
             'been convicted',
-            'criminal history'
+            'criminal history',
+            'have you ever been convicted'
           ],
           type: 'select',
           defaultAnswer: 'No',
@@ -468,7 +529,8 @@ window.ApplicationQuestions = {
             'probation.*license',
             'credential.*action',
             'subject of.*disciplinary action',
-            'ever been.*disciplinary.*action'
+            'ever been.*disciplinary.*action',
+            'disciplined by'
           ],
           type: 'select',
           defaultAnswer: 'No',
@@ -486,7 +548,8 @@ window.ApplicationQuestions = {
             'ineligible from participation',
             'excluded, debarred, suspended or otherwise ineligible',
             'excluded from.*federal or state health care program',
-            'excluded from.*participation'
+            'excluded from.*participation',
+            'sanctioned by'
           ],
           type: 'select',
           defaultAnswer: 'No',
@@ -504,7 +567,8 @@ window.ApplicationQuestions = {
             'drivers license',
             'driving license',
             'valid license to drive',
-            'motor vehicle license'
+            'motor vehicle license',
+            'do you have a valid driver'
           ],
           type: 'select',
           defaultAnswer: 'Yes',
@@ -517,7 +581,8 @@ window.ApplicationQuestions = {
             'licensed in',
             'hold.*license',
             'current license',
-            'active license'
+            'active license',
+            'professional certification'
           ],
           type: 'select',
           defaultAnswer: 'No',
@@ -530,7 +595,8 @@ window.ApplicationQuestions = {
             'clearance level',
             'classified.*clearance',
             'secret clearance',
-            'top secret'
+            'top secret',
+            'government clearance'
           ],
           type: 'select',
           defaultAnswer: 'No',
@@ -551,7 +617,8 @@ window.ApplicationQuestions = {
             'receive text',
             'text notification',
             'authorize cvs health to communicate with me via text',
-            'authorize.*communicate.*via text'
+            'authorize.*communicate.*via text',
+            'consent to receive text'
           ],
           type: 'select',
           defaultAnswer: 'Yes',
@@ -563,7 +630,8 @@ window.ApplicationQuestions = {
             'authorize.*email',
             'email communication',
             'receive email',
-            'contact.*email'
+            'contact.*email',
+            'consent to receive email'
           ],
           type: 'select',
           defaultAnswer: 'Yes',
@@ -583,7 +651,8 @@ window.ApplicationQuestions = {
             'where did you learn',
             'hear about.*position',
             'find this job',
-            'source of application'
+            'source of application',
+            'referral source'
           ],
           type: 'text',
           defaultAnswer: 'LinkedIn',
@@ -596,7 +665,8 @@ window.ApplicationQuestions = {
             'referral name',
             'employee referral',
             'who referred you',
-            'referral.*employee'
+            'referral.*employee',
+            'referrer name'
           ],
           type: 'text',
           defaultAnswer: '',
@@ -610,7 +680,8 @@ window.ApplicationQuestions = {
             'applied before',
             'prior application',
             'past application',
-            'have you applied'
+            'have you applied',
+            'submitted an application'
           ],
           type: 'select',
           defaultAnswer: 'No',
@@ -666,6 +737,7 @@ window.ApplicationQuestions = {
 
     const normalizedLabel = labelText.toLowerCase().trim();
 
+    // 1. Precise Regex Matching
     for (const [categoryKey, category] of Object.entries(this.categories)) {
       for (const [questionKey, question] of Object.entries(category.questions)) {
         for (const pattern of question.patterns) {
@@ -680,6 +752,47 @@ window.ApplicationQuestions = {
           }
         }
       }
+    }
+
+    // 2. Fuzzy / Keyword Counting Fallback
+    // If no regex matched, try to find the best candidate based on keyword overlap
+    let bestMatch = null;
+    let maxScore = 0;
+
+    for (const [categoryKey, category] of Object.entries(this.categories)) {
+      for (const [questionKey, question] of Object.entries(category.questions)) {
+        for (const pattern of question.patterns) {
+          // Simple keyword extraction (remove regex symbols)
+          const keywords = pattern.replace(/[.*+?^${}()|[\]\\]/g, ' ').split(/\s+/).filter(w => w.length > 3);
+          if (keywords.length === 0) continue;
+
+          let matchCount = 0;
+          for (const kw of keywords) {
+            if (normalizedLabel.includes(kw)) {
+              matchCount++;
+            }
+          }
+
+          // Score based on percentage of keywords matched
+          const score = matchCount / keywords.length;
+
+          // Threshold: at least 74% of keywords must be present for a "fuzzy" match
+          if (score > 0.74 && score > maxScore) {
+            maxScore = score;
+            bestMatch = {
+              category: categoryKey,
+              questionKey: questionKey,
+              question: question,
+              confidence: 0.7 + (score * 0.2) // Range 0.7 - 0.9 confidence
+            };
+          }
+        }
+      }
+    }
+
+    if (bestMatch) {
+      console.log(`[AppQ] Fuzzy matched "${labelText}" to ${bestMatch.questionKey} (Score: ${maxScore.toFixed(2)})`);
+      return bestMatch;
     }
 
     return null;

@@ -1582,6 +1582,15 @@ Write a professional response in first person as the applicant. Be concise but s
             ...profile,
             workExperience,
             education,
+            // Ensure address object is properly structured for FormFiller (even if filler supports flat keys, this is safer)
+            address: {
+              street: profile.address || '',
+              city: profile.city || '',
+              state: profile.state || '',
+              stateAbbr: profile.state || '', // Fallback
+              zipCode: profile.zipCode || '',
+              country: profile.country || ''
+            },
             // Add other required fields if missing
             fullName: profile?.fullName || `${profile?.firstName} ${profile?.lastName}`.trim()
           };

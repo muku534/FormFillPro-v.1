@@ -11,7 +11,18 @@ const UserProfileManager = {
       phone: '',
       linkedIn: '',
       portfolio: '',
-      location: ''
+      fullName: '',
+      email: '',
+      phone: '',
+      linkedIn: '',
+      portfolio: '',
+      address: {
+        street: '',
+        city: '',
+        state: '',
+        zipCode: '',
+        country: ''
+      }
     },
     professional: {
       currentTitle: '',
@@ -98,6 +109,34 @@ const UserProfileManager = {
         }
       }
     }
+
+    // Handle flat profile keys from popup.js
+    if (profile.address && typeof profile.address === 'string') {
+      merged.personal.address.street = profile.address;
+    } else if (profile.address && typeof profile.address === 'object') {
+      merged.personal.address = { ...merged.personal.address, ...profile.address };
+    }
+
+    if (profile.city) merged.personal.address.city = profile.city;
+    if (profile.state) merged.personal.address.state = profile.state;
+    if (profile.zipCode) merged.personal.address.zipCode = profile.zipCode;
+    if (profile.country) merged.personal.address.country = profile.country;
+
+    if (profile.firstName) merged.personal.firstName = profile.firstName;
+    if (profile.lastName) merged.personal.lastName = profile.lastName;
+    if (profile.email) merged.personal.email = profile.email;
+    if (profile.phone) merged.personal.phone = profile.phone;
+    if (profile.linkedIn) merged.personal.linkedIn = profile.linkedIn;
+    if (profile.portfolio) merged.personal.portfolio = profile.portfolio;
+
+    // Map professional flat keys
+    if (profile.currentTitle) merged.professional.currentTitle = profile.currentTitle;
+    if (profile.currentCompany) merged.professional.currentCompany = profile.currentCompany;
+    if (profile.yearsExperience) merged.professional.yearsExperience = profile.yearsExperience;
+    if (profile.industry) merged.professional.industry = profile.industry;
+
+    // Resume file
+    if (profile.resumeFile) merged.resumeFile = profile.resumeFile;
 
     return merged;
   },
@@ -209,6 +248,12 @@ const UserProfileManager = {
       fullName: profile.personal.fullName || `${profile.personal.firstName} ${profile.personal.lastName}`.trim(),
       email: profile.personal.email,
       phone: profile.personal.phone,
+      address: profile.personal.address, // Pass full address object
+      city: profile.personal.address.city, // Also pass flat for compatibility
+      zipCode: profile.personal.address.zipCode,
+      state: profile.personal.address.state,
+      start: profile.personal.address.street,
+      country: profile.personal.address.country,
       skills: profile.professional.skills.join(', ') || 'problem-solving and communication',
       industry: profile.professional.industry || 'technology',
       yearsExperience: profile.professional.yearsExperience || '5+',

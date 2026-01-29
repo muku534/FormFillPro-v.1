@@ -10,19 +10,15 @@ const FormFiller = {
       lastName: profile.lastName,
       fullName: profile.fullName,
       phone: profile.phone,
-      address: profile.address.street,
-      address2: '',
-      city: profile.address.city,
-      state: profile.address.state,
-      stateAbbr: profile.address.stateAbbr,
-      zipCode: profile.address.zipCode,
-      country: profile.address.country,
+      address: profile.address?.street || profile.address || '',
+      address2: profile.address?.street2 || '',
+      city: profile.address?.city || profile.city || '',
+      state: profile.address?.state || profile.state || '',
+      stateAbbr: profile.address?.stateAbbr || profile.state || '',
+      zipCode: profile.address?.zipCode || profile.zipCode || '',
+      country: profile.address?.country || profile.country || '',
       username: profile.username,
       company: profile.company,
-      jobTitle: profile.jobTitle,
-      website: profile.website,
-      birthDate: profile.birthDate,
-      age: String(profile.age),
       gender: profile.gender,
       creditCard: FakeDataGenerator.creditCard(),
       cvv: FakeDataGenerator.cvv(),
@@ -95,18 +91,18 @@ const FormFiller = {
 
   detectFramework(element) {
     if (element._reactRootContainer || element.__reactFiber$ ||
-        document.querySelector('[data-reactroot]') ||
-        Object.keys(element).some(key => key.startsWith('__react'))) {
+      document.querySelector('[data-reactroot]') ||
+      Object.keys(element).some(key => key.startsWith('__react'))) {
       return 'react';
     }
 
     if (element.__vue__ || element._vei || element.__vueParentComponent ||
-        document.querySelector('[data-v-]')) {
+      document.querySelector('[data-v-]')) {
       return 'vue';
     }
 
     if (element.getAttribute('ng-model') || element.getAttribute('[(ngModel)]') ||
-        document.querySelector('[ng-app]') || document.querySelector('[ng-controller]')) {
+      document.querySelector('[ng-app]') || document.querySelector('[ng-controller]')) {
       return 'angular';
     }
 

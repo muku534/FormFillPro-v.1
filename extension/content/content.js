@@ -248,7 +248,7 @@ const FakeDataGenerator = {
   }
 };
 
-const FieldDetector = {
+/* const FieldDetector = {
   patterns: {
     email: { attributes: ['email', 'e-mail', 'mail'], validFor: ['input'], autocomplete: ['email'] },
     password: { attributes: ['password', 'passwd', 'pwd'], validFor: ['input'], autocomplete: ['current-password', 'new-password'] },
@@ -627,45 +627,98 @@ const FieldDetector = {
       });
     }
 
+    const workdayQuestions = this.detectApplicationQuestions();
+    allFields.push(...workdayQuestions);
+
     return allFields;
   },
 
-  findAllInputElements() {
-    const elements = [];
-    const selector = 'input, select, textarea, [contenteditable="true"], [role="textbox"], [role="combobox"]';
+  detectApplicationQuestions(root = document) {
+    // 🧠 WORKDAY INSIGHT: Questions are UI blocks (fieldset), not inputs.
+    const questions = [];
 
-    elements.push(...document.querySelectorAll(selector));
+    // Find all potential question containers
+    const containers = Array.from(root.querySelectorAll('fieldset legend, fieldset [data-automation-id="richText"]'));
 
-    this.traverseShadowDOM(document.body, elements, selector);
+    containers.forEach((container) => {
+      const fieldset = container.closest('fieldset');
+      if (!fieldset) return;
 
-    try {
-      const iframes = document.querySelectorAll('iframe');
-      iframes.forEach(iframe => {
-        try {
-          const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
-          if (iframeDoc) {
-            elements.push(...iframeDoc.querySelectorAll(selector));
-            this.traverseShadowDOM(iframeDoc.body, elements, selector);
-          }
-        } catch (e) { }
-      });
-    } catch (e) { }
+      const button = fieldset.querySelector('button[aria-haspopup="listbox"], button[aria-haspopup="true"]');
+      if (!button) return;
 
-    return elements;
-  },
+      // Extract clean question text
+      const text = container.innerText
+        .replace(/\u002A/g, '')
+        .replace(/\s+/g, ' ')
+  .trim();
 
-  traverseShadowDOM(root, elements, selector = 'input, select, textarea') {
-    if (!root) return;
+if (text.length < 15) return;
 
-    const allElements = root.querySelectorAll('*');
-    allElements.forEach(el => {
-      if (el.shadowRoot) {
-        elements.push(...el.shadowRoot.querySelectorAll(selector));
-        this.traverseShadowDOM(el.shadowRoot, elements, selector);
-      }
+// Avoid duplicates
+if (questions.some(q => q.button === button)) return;
+
+questions.push({
+  fieldset: fieldset,
+  button: button,
+  questionText: text,
+  tagName: 'button'
+});
+    });
+
+// Fallback for solo listbox buttons
+const soloButtons = Array.from(root.querySelectorAll('button[aria-haspopup="listbox"]'))
+  .filter(btn => !questions.some(q => q.element === btn));
+
+soloButtons.forEach((button, index) => {
+  const labelText = typeof extractQuestionText !== 'undefined' ? extractQuestionText(button) : '';
+  if (labelText && labelText.length > 15) {
+    questions.push({
+      index: 9500 + index,
+      element: button,
+      tagName: 'button',
+      type: 'applicationQuestion',
+      detectedType: 'applicationQuestion',
+      automationId: button.getAttribute('data-automation-id'),
+      id: button.id || `solo-q-${index}`,
+      name: button.name || button.getAttribute('name'),
+      label: labelText,
+      required: button.getAttribute('aria-label')?.includes('Required'),
+      value: button.innerText
     });
   }
-};
+});
+
+if (questions.length > 0) {
+  console.log(`[FormFill] Detected ${questions.length} application questions in frame:`, window.location.href);
+}
+
+return questions;
+  },
+
+findAllInputElements() {
+  const elements = [];
+  const selector = 'input, select, textarea, [contenteditable="true"], [role="textbox"], [role="combobox"]';
+
+  elements.push(...document.querySelectorAll(selector));
+
+  this.traverseShadowDOM(document.body, elements, selector);
+
+  return elements;
+},
+
+traverseShadowDOM(root, elements, selector = 'input, select, textarea') {
+  if (!root) return;
+
+  const allElements = root.querySelectorAll('*');
+  allElements.forEach(el => {
+    if (el.shadowRoot) {
+      elements.push(...el.shadowRoot.querySelectorAll(selector));
+      this.traverseShadowDOM(el.shadowRoot, elements, selector);
+    }
+  });
+}
+}; */
 
 // Container-based block indexing (Work Experience, Education)
 // Groups form fields by their parent container and assigns data index per container
@@ -1227,15 +1280,7 @@ const FormFiller = {
     }
   },
 
-  fillField(element, fieldType, profile) {
-    // ✅ SAFE: application questions FIRST
-    if (typeof ApplicationQuestionFiller !== 'undefined') {
-      const appQResult = ApplicationQuestionFiller.tryFill(element, profile);
-      if (appQResult?.filled) {
-        return { success: true, value: appQResult.value, source: 'application-question' };
-      }
-    }
-
+  async fillField(element, fieldType, profile, options = {}) {
     const tagName = element.tagName.toLowerCase();
     const inputType = element.type?.toLowerCase();
 
@@ -1287,11 +1332,15 @@ const FormFiller = {
     if (allFields.length === 0) {
       return { success: false, message: 'No form fields found' };
     }
-
     // Initialize block container mappers
     if (typeof BlockContainerMapper !== 'undefined') {
       BlockContainerMapper.reset('work', profile.workExperience || []);
       BlockContainerMapper.reset('edu', profile.education || []);
+    }
+
+    // 🔥 NEW: Dedicated Application Question pass (Parallel pipeline)
+    if (typeof ApplicationQuestionFiller !== 'undefined') {
+      await ApplicationQuestionFiller.fillAllQuestions(profile, applicationQuestions);
     }
 
     let filledCount = 0;
@@ -1308,15 +1357,6 @@ const FormFiller = {
         const templateMatch = templateFields.find(tf => tf.selector && document.querySelector(tf.selector) === element);
         if (templateMatch && templateMatch.value) {
           this.setFieldValue(element, templateMatch.value);
-          filledCount++;
-          continue;
-        }
-      }
-
-      // B. Handle Application Questions
-      if (applicationQuestions && typeof ApplicationQuestionFiller !== 'undefined') {
-        const appQResult = ApplicationQuestionFiller.tryFill(element, profile, applicationQuestions);
-        if (appQResult?.filled) {
           filledCount++;
           continue;
         }
@@ -1348,7 +1388,7 @@ const FormFiller = {
       }
 
       // E. Fallback to regular field filling (Always try if not already filled)
-      this.fillField(element, field.detectedType, profile);
+      await this.fillField(element, field.detectedType, profile);
       filledCount++;
     }
 
@@ -1544,71 +1584,253 @@ const SmartFieldClassifier = {
   }
 };
 
+const WorkdayDropdownAdapter = {
+  async selectOption(button, answer) {
+    if (!button || !answer) return false;
+
+    try {
+      console.log(`[WorkdayAdapter] Attempting to fill: "${answer}"`);
+
+      // 1. Open dropdown with Retry Logic
+      let listbox = null;
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        if (attempt > 1) console.log(`[WorkdayAdapter] Retry attempt ${attempt} for "${answer}"...`);
+
+        button.scrollIntoView({ block: 'center' });
+        await new Promise(r => setTimeout(r, 150 + (attempt * 50)));
+
+        // Modern React/Workday often needs pointer events
+        button.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+        button.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+        button.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }));
+        button.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+        button.click();
+
+        // 2. Wait for Dropdown (using Deep Scan)
+        const waitForListbox = async (timeout = 2500) => {
+          const start = Date.now();
+          while (Date.now() - start < timeout) {
+            // Use FieldDetector.collectDeep if available, otherwise fallback to querySelectorAll
+            let candidates = [];
+            if (typeof FieldDetector !== 'undefined' && FieldDetector.collectDeep) {
+              candidates = FieldDetector.collectDeep(document, '[role="listbox"], [role="menu"], ul[class*="Dropdown"], div[data-automation-id="popup-content"]');
+            } else {
+              candidates = Array.from(document.querySelectorAll('[role="listbox"], [role="menu"], ul[class*="Dropdown"], div[data-automation-id="popup-content"]'));
+            }
+
+            const listbox = candidates.find(el => {
+              const rect = el.getBoundingClientRect();
+              return rect.width > 0 && rect.height > 0 && (el.children.length > 0 || el.innerText.length > 0);
+            });
+
+            if (listbox) return listbox;
+            await new Promise(r => setTimeout(r, 100));
+          }
+          return null;
+        };
+
+        listbox = await waitForListbox(2000);
+        if (listbox) break;
+      }
+
+      if (!listbox) {
+        console.warn('[WorkdayAdapter] Listbox not found after 3 attempts.');
+        return false;
+      }
+
+      // 3. Find matching option (Deep Scan inside listbox)
+      // Sometimes options are nested deep in the listbox container
+      let options = [];
+      if (typeof FieldDetector !== 'undefined' && FieldDetector.collectDeep) {
+        options = FieldDetector.collectDeep(listbox, '[role="option"], [role="menuitem"], li, [class*="option"], div[id*="option"]');
+      } else {
+        options = Array.from(listbox.querySelectorAll('[role="option"], [role="menuitem"], li, [class*="option"], div[id*="option"]'));
+      }
+
+      const normalize = s => s.toLowerCase().replace(/[^a-z0-9]/g, '').trim();
+      const normalizedAnswer = normalize(answer);
+
+      let option = options.find(opt => {
+        const optText = normalize(opt.innerText);
+        return optText === normalizedAnswer ||
+          optText.includes(normalizedAnswer) ||
+          normalizedAnswer.includes(optText);
+      });
+
+      // Yes/No fallback logic
+      if (!option) {
+        const isYes = ApplicationQuestionFiller.isAffirmativeAnswer ? ApplicationQuestionFiller.isAffirmativeAnswer(answer) : ['yes', 'y'].includes(normalizedAnswer);
+        const patterns = isYes ? ['yes', 'ido', 'iam', 'ihave', 'agree', 'authorize', 'consent'] : ['no', 'idonot', 'iamnot', 'disagree', 'decline'];
+
+        option = options.find(opt => {
+          const optText = normalize(opt.innerText);
+          return patterns.some(p => optText === p || optText.startsWith(p));
+        });
+      }
+
+      if (option) {
+        console.log(`[WorkdayAdapter] Clicking option: "${option.innerText}"`);
+        option.scrollIntoView({ block: 'nearest' });
+
+        option.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+        option.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+        option.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }));
+        option.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+        option.click();
+
+        // Trigger blur/change events to notify logic
+        await new Promise(r => setTimeout(r, 50));
+        button.dispatchEvent(new Event('change', { bubbles: true }));
+        button.blur();
+        return true;
+      } else {
+        console.warn(`[WorkdayAdapter] Option not found for "${answer}" in listbox of ${options.length} items`);
+      }
+
+      return false;
+    } catch (e) {
+      console.error('[WorkdayAdapter] Error:', e);
+      return false;
+    }
+  }
+};
+
 const ApplicationQuestionFiller = {
-  tryFill(element, profile, applicationQuestions = {}) {
+  async tryFill(element, profile, applicationQuestions = {}) {
     try {
       if (typeof ApplicationQuestions === 'undefined') return null;
 
-      // 1. Get descriptive text for matching (Restored DOM-walk behavior)
-      const text = typeof extractQuestionText !== 'undefined' ? extractQuestionText(element) : '';
+      // User's surgical approach: find the fieldset context
+      const fieldset = element.closest('fieldset');
+      const button = element.tagName.toLowerCase() === 'button' ? element : fieldset?.querySelector('button[aria-haspopup="listbox"]');
 
-      // TEMP LOG to verify extraction on ATS forms
-      if (text) {
-        console.log('[AppQ] question text:', text.substring(0, 100) + (text.length > 100 ? '...' : ''));
-      }
-
-      if (!text || text.length < 15) return null;
+      // 1. Get descriptive text for matching (prefer fieldset text for dropdowns)
+      const targetForText = fieldset || element;
+      const text = typeof extractQuestionText !== 'undefined' ? extractQuestionText(targetForText) : '';
 
       // 2. See if ApplicationQuestions knows about this
-      const match = ApplicationQuestions.match(text);
-      if (!match) return null;
+      const detection = ApplicationQuestions.detectQuestion(text);
+      if (!detection || detection.confidence < 0.4) return null;
 
-      // 3. Get the answer
-      const storageKey = match.questionKey;
-      const value = ApplicationQuestions.getAnswer(storageKey, applicationQuestions);
+      const questionKey = detection.questionKey;
+      const value = ApplicationQuestions.getAnswer(questionKey, applicationQuestions);
       if (!value) return null;
 
-      // 4. Fill safely based on type
+      console.log(`[AppQ] Success: ${questionKey} detected (conf: ${detection.confidence.toFixed(2)}). Filling: ${value}`);
+
+      // 3. WORKDAY UI ACTION (Dropdown buttons)
+      if (button && button.getAttribute('aria-haspopup') === 'listbox') {
+        const success = await WorkdayDropdownAdapter.selectOption(button, value);
+        if (success) {
+          return { filled: true, value };
+        }
+      }
+
+      // 4. Standard Element Filling (Fallback)
       const tagName = element.tagName.toLowerCase();
       const inputType = element.type?.toLowerCase();
 
       if (tagName === 'select') {
-        FormFiller.setSelectValue(element, value);
-      } else if (inputType === 'radio') {
-        const name = element.name;
-        if (name) {
-          const radioGroup = document.querySelectorAll(`input[type="radio"][name="${name}"]`);
-          FormFiller.setRadioValue(radioGroup, value);
+        const matchedValue = ApplicationQuestions.matchSelectOption(Array.from(element.options), value);
+        if (matchedValue !== null) {
+          FormFiller.setSelectValue(element, matchedValue);
+          return { filled: true, value: matchedValue };
         }
+      } else if (inputType === 'radio') {
+        const radioGroup = document.querySelectorAll(`input[type="radio"][name="${element.name}"]`);
+        FormFiller.setRadioValue(radioGroup, value);
+        return { filled: true, value };
       } else if (inputType === 'checkbox') {
-        FormFiller.setCheckboxValue(element, !!this.isAffirmativeAnswer(value));
-      } else {
+        const shouldCheck = this.isAffirmativeAnswer(value);
+        FormFiller.setCheckboxValue(element, shouldCheck);
+        return { filled: true, value: shouldCheck };
+      } else if (tagName === 'input' || tagName === 'textarea') {
         FormFiller.setFieldValue(element, value);
+        return { filled: true, value };
       }
 
-      return { filled: true, value };
+      return null;
     } catch (e) {
-      console.warn('[AppQ] safe skip', e);
+      console.warn('[AppQ] Error in tryFill:', e);
       return null;
     }
   },
 
+  async fillAllQuestions(profile, applicationQuestions = {}) {
+    if (!FieldDetector.detectApplicationQuestions) return;
+
+    const questions = FieldDetector.detectApplicationQuestions(document);
+
+    if (!questions.length) {
+      console.log('[AppQ] No application questions detected');
+      return;
+    }
+
+    console.log(`[AppQ] Detected ${questions.length} Workday application questions`);
+
+    for (const q of questions) {
+      try {
+        // 2. See if ApplicationQuestions knows about this
+        const match = ApplicationQuestions.detectQuestion(q.questionText);
+        if (!match) {
+          console.log(`[AppQ] Skipped: No match for "${q.questionText.substring(0, 50)}..."`);
+          continue;
+        }
+
+        const answer = applicationQuestions[match.questionKey] || match.question.defaultAnswer;
+        if (!answer) {
+          console.log(`[AppQ] Skipped: No answer found for ${match.questionKey}`);
+          continue;
+        }
+
+        // Use the button from the detection object
+        if (q.button || q.element) {
+          const target = q.button || q.element;
+          console.log(`[AppQ] Match found: "${match.questionKey}" (Confidence: ${match.confidence.toFixed(2)}) -> Answer: "${answer}"`);
+          await WorkdayDropdownAdapter.selectOption(target, answer);
+          await new Promise(r => setTimeout(r, 400));
+        }
+      } catch (err) {
+        console.warn('[AppQ] Error filling block:', err);
+      }
+    }
+    console.log('[AppQ] Dedicated Application Question pass completed.');
+  },
+
   isAffirmativeAnswer(answer) {
-    const yesPatterns = ['yes', 'true', 'y', '1', 'i do', 'i am', 'i have', 'agree', 'authorize', 'consent', 'affirmative'];
-    const answerLower = (answer || '').toLowerCase().trim();
-    return yesPatterns.some(p => answerLower.includes(p) || answerLower === p);
+    if (!answer) return false;
+    const lower = answer.toLowerCase().trim();
+    return ['yes', 'y', 'true', 'agree', 'authorize', 'i do', 'i am', 'i have', 'consent'].some(p => lower.includes(p));
   }
 };
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.action === 'fillAll') {
+  if (message.action === 'fillAll' || message.action === 'fillAllSmart' || message.action === 'fillAllAI') {
     (async () => {
       try {
+        // 1. Fetch ALL data first
+        const storage = await chrome.storage.local.get(['formfill_user_profile', 'application_questions']);
+        const userProfile = storage.formfill_user_profile || {};
+        const applicationQuestions = storage.application_questions || {};
         const profile = FakeDataGenerator.generateProfile();
-        const result = FormFiller.fillAllForms(profile);
 
-        const storageResult = await chrome.storage.local.get(['formfill_user_profile']);
-        const userProfile = storageResult.formfill_user_profile || {};
+        // 2. 🔥 DEDICATED PASS (Independent parallel pipeline)
+        if (typeof ApplicationQuestionFiller !== 'undefined') {
+          await ApplicationQuestionFiller.fillAllQuestions(profile, applicationQuestions);
+        }
+
+        // 3. MAIN PASS
+        let result = { success: true };
+        if (message.action === 'fillAll') {
+          result = FormFiller.fillAllForms(profile, null, applicationQuestions);
+        } else {
+          if (message.action === 'fillAllAI') {
+            await SmartFiller.saveSettings({ mode: 'ai', useCache: true, autoDetectLongForm: true });
+          }
+          result = await SmartFiller.fillAllForms(profile);
+        }
+
+        // 4. FILE UPLOAD
         if (userProfile.resumeFile) {
           const filesUploaded = await FormFiller.fillFileInputs(userProfile.resumeFile);
           result.filesUploaded = filesUploaded;
@@ -1616,45 +1838,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
         sendResponse(result);
       } catch (error) {
-        sendResponse({ success: false, error: error.message });
-      }
-    })();
-    return true;
-  } else if (message.action === 'fillAllSmart') {
-    (async () => {
-      try {
-        const profile = FakeDataGenerator.generateProfile();
-        const result = await SmartFiller.fillAllForms(profile);
-
-        const storageResult = await chrome.storage.local.get(['formfill_user_profile']);
-        const userProfile = storageResult.formfill_user_profile || {};
-        if (userProfile.resumeFile) {
-          const filesUploaded = await FormFiller.fillFileInputs(userProfile.resumeFile);
-          result.filesUploaded = filesUploaded;
-        }
-
-        sendResponse(result);
-      } catch (error) {
-        sendResponse({ success: false, error: error.message });
-      }
-    })();
-    return true;
-  } else if (message.action === 'fillAllAI') {
-    (async () => {
-      try {
-        await SmartFiller.saveSettings({ mode: 'ai', useCache: true, autoDetectLongForm: true });
-        const profile = FakeDataGenerator.generateProfile();
-        const result = await SmartFiller.fillAllForms(profile);
-
-        const storageResult = await chrome.storage.local.get(['formfill_user_profile']);
-        const userProfile = storageResult.formfill_user_profile || {};
-        if (userProfile.resumeFile) {
-          const filesUploaded = await FormFiller.fillFileInputs(userProfile.resumeFile);
-          result.filesUploaded = filesUploaded;
-        }
-
-        sendResponse(result);
-      } catch (error) {
+        console.error('[FormFill] Fill error:', error);
         sendResponse({ success: false, error: error.message });
       }
     })();

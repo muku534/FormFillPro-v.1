@@ -472,6 +472,109 @@
             </div>
           </div>
 
+
+
+          <div class="accordion-item" data-section="demographicsSettings">
+            <button class="accordion-header" type="button">
+              <div class="accordion-header-content">
+                <svg class="accordion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+                <div class="accordion-header-text">
+                  <span class="accordion-title">Personal Data (EEO)</span>
+                  <span class="accordion-subtitle" id="demo-preview">Gender, Veteran, Ethnicity</span>
+                </div>
+              </div>
+              <svg class="accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            <div class="accordion-content">
+              <p class="ai-section-desc">Voluntary self-identification for job applications.</p>
+              <div class="profile-fields">
+                <div class="profile-field">
+                  <label for="appq-isOver18">At least 18 years old</label>
+                  <select id="appq-isOver18">
+                    <option value="">Not set</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                  </select>
+                </div>
+                <div class="profile-field">
+                  <label for="appq-isOver21">At least 21 years old</label>
+                  <select id="appq-isOver21">
+                    <option value="">Not set</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                  </select>
+                </div>
+                <div class="profile-field">
+                  <label for="appq-veteranStatus">Veteran status</label>
+                  <select id="appq-veteranStatus">
+                    <option value="">Not set</option>
+                    <option value="Yes">Yes, I am a veteran</option>
+                    <option value="No">No</option>
+                    <option value="Prefer not to say">Prefer not to say</option>
+                  </select>
+                </div>
+                <div class="profile-field">
+                  <label for="appq-militarySpouse">Military spouse/partner</label>
+                  <select id="appq-militarySpouse">
+                    <option value="">Not set</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                  </select>
+                </div>
+                <div class="profile-field">
+                  <label for="appq-disabilityStatus">Disability status</label>
+                  <select id="appq-disabilityStatus">
+                    <option value="">Not set</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                    <option value="Prefer not to say">Prefer not to say</option>
+                  </select>
+                </div>
+                <div class="profile-field">
+                  <label for="appq-gender">Gender (EEO)</label>
+                  <select id="appq-gender">
+                    <option value="">Not set</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Non-binary">Non-binary</option>
+                    <option value="Prefer not to say">Prefer not to say</option>
+                  </select>
+                </div>
+                <div class="profile-field">
+                  <label for="appq-ethnicity">Race/Ethnicity</label>
+                  <select id="appq-ethnicity">
+                    <option value="">Not set</option>
+                    <option value="Prefer not to say">Prefer not to say</option>
+                    <option value="Hispanic or Latino">Hispanic or Latino</option>
+                    <option value="White">White</option>
+                    <option value="Black or African American">Black or African American</option>
+                    <option value="Asian">Asian</option>
+                    <option value="Native Hawaiian or Other Pacific Islander">Native Hawaiian or Other Pacific Islander
+                    </option>
+                    <option value="American Indian or Alaska Native">American Indian or Alaska Native</option>
+                    <option value="Two or More Races">Two or More Races</option>
+                  </select>
+                </div>
+                <div class="profile-field">
+                  <label for="appq-hispanicOrLatino">Hispanic or Latino</label>
+                  <select id="appq-hispanicOrLatino">
+                    <option value="">Not set</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                    <option value="Prefer not to say">Prefer not to say</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="accordion-item accordion-item-highlight" data-section="applicationQuestions">
             <button class="accordion-header" type="button">
               <div class="accordion-header-content">
@@ -553,63 +656,7 @@
                 </div>
               </div>
 
-              <div class="appq-category" data-category="demographics">
-                <h4 class="appq-category-title">Demographics & Age</h4>
-                <div class="profile-fields">
-                  <div class="profile-field">
-                    <label for="appq-isOver18">At least 18 years old</label>
-                    <select id="appq-isOver18">
-                      <option value="">Not set</option>
-                      <option value="Yes">Yes</option>
-                      <option value="No">No</option>
-                    </select>
-                  </div>
-                  <div class="profile-field">
-                    <label for="appq-isOver21">At least 21 years old</label>
-                    <select id="appq-isOver21">
-                      <option value="">Not set</option>
-                      <option value="Yes">Yes</option>
-                      <option value="No">No</option>
-                    </select>
-                  </div>
-                  <div class="profile-field">
-                    <label for="appq-veteranStatus">Veteran status</label>
-                    <select id="appq-veteranStatus">
-                      <option value="">Not set</option>
-                      <option value="Yes">Yes, I am a veteran</option>
-                      <option value="No">No</option>
-                      <option value="Prefer not to say">Prefer not to say</option>
-                    </select>
-                  </div>
-                  <div class="profile-field">
-                    <label for="appq-militarySpouse">Military spouse/partner</label>
-                    <select id="appq-militarySpouse">
-                      <option value="">Not set</option>
-                      <option value="Yes">Yes</option>
-                      <option value="No">No</option>
-                    </select>
-                  </div>
-                  <div class="profile-field">
-                    <label for="appq-disabilityStatus">Disability status</label>
-                    <select id="appq-disabilityStatus">
-                      <option value="">Not set</option>
-                      <option value="Yes">Yes</option>
-                      <option value="No">No</option>
-                      <option value="Prefer not to say">Prefer not to say</option>
-                    </select>
-                  </div>
-                  <div class="profile-field">
-                    <label for="appq-gender">Gender (EEO)</label>
-                    <select id="appq-gender">
-                      <option value="">Not set</option>
-                      <option value="Male">Male</option>
-                      <option value="Female">Female</option>
-                      <option value="Non-binary">Non-binary</option>
-                      <option value="Prefer not to say">Prefer not to say</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
+
 
               <div class="appq-category" data-category="compensation">
                 <h4 class="appq-category-title">Compensation & Expectations</h4>
@@ -625,6 +672,7 @@
                 </div>
               </div>
 
+              <!--
               <div class="appq-category" data-category="availability">
                 <h4 class="appq-category-title">Availability & Work Preferences</h4>
                 <div class="profile-fields">
@@ -683,8 +731,9 @@
                   </div>
                 </div>
               </div>
+              -->
 
-              <div class="appq-category" data-category="background">
+              <!-- <div class="appq-category" data-category="background">
                 <h4 class="appq-category-title">Background & Compliance</h4>
                 <div class="profile-fields">
                   <div class="profile-field">
@@ -797,7 +846,7 @@
                     </select>
                   </div>
                 </div>
-              </div>
+              </div> -->
 
               <div class="appq-actions">
                 <button id="appq-set-defaults" class="btn btn-secondary btn-small">

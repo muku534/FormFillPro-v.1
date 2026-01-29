@@ -1,565 +1,632 @@
-const FieldDetector = {
-  patterns: {
-    email: {
-      attributes: ['email', 'e-mail', 'mail'],
-      types: ['email'],
-      autocomplete: ['email', 'username']
-    },
-    password: {
-      attributes: ['password', 'passwd', 'pwd', 'pass'],
-      types: ['password'],
-      autocomplete: ['current-password', 'new-password']
-    },
-    confirmPassword: {
-      attributes: ['confirm', 'verify', 'retype', 'repeat'],
-      types: ['password'],
-      autocomplete: ['new-password']
-    },
-    firstName: {
-      attributes: ['firstname', 'first-name', 'first_name', 'fname', 'given-name', 'givenname'],
-      types: ['text'],
-      autocomplete: ['given-name']
-    },
-    lastName: {
-      attributes: ['lastname', 'last-name', 'last_name', 'lname', 'surname', 'family-name', 'familyname'],
-      types: ['text'],
-      autocomplete: ['family-name']
-    },
-    fullName: {
-      attributes: ['fullname', 'full-name', 'full_name', 'name', 'displayname'],
-      types: ['text'],
-      autocomplete: ['name']
-    },
-    phone: {
-      attributes: ['phone', 'telephone', 'tel', 'mobile', 'cell', 'phonenumber'],
-      types: ['tel', 'text'],
-      autocomplete: ['tel', 'tel-national']
-    },
-    address: {
-      attributes: ['address', 'street', 'address1', 'address-line-1', 'streetaddress'],
-      types: ['text'],
-      autocomplete: ['street-address', 'address-line1']
-    },
-    address2: {
-      attributes: ['address2', 'apt', 'suite', 'unit', 'address-line-2'],
-      types: ['text'],
-      autocomplete: ['address-line2']
-    },
-    city: {
-      attributes: ['city', 'town', 'locality'],
-      types: ['text'],
-      autocomplete: ['address-level2']
-    },
-    state: {
-      attributes: ['state', 'province', 'region'],
-      types: ['text', 'select'],
-      autocomplete: ['address-level1']
-    },
-    zipCode: {
-      attributes: ['zip', 'zipcode', 'postal', 'postalcode', 'postcode'],
-      types: ['text'],
-      autocomplete: ['postal-code']
-    },
-    country: {
-      attributes: ['country', 'nation'],
-      types: ['text', 'select'],
-      autocomplete: ['country', 'country-name']
-    },
-    username: {
-      attributes: ['username', 'user-name', 'user_name', 'userid', 'login'],
-      types: ['text'],
-      autocomplete: ['username']
-    },
-    company: {
-      attributes: ['company', 'organization', 'org', 'employer', 'business'],
-      types: ['text'],
-      autocomplete: ['organization']
-    },
-    jobTitle: {
-      attributes: ['jobtitle', 'job-title', 'job_title', 'title', 'position', 'role', 'occupation'],
-      types: ['text'],
-      autocomplete: ['organization-title']
-    },
-    website: {
-      attributes: ['website', 'url', 'web', 'homepage', 'site'],
-      types: ['url', 'text'],
-      autocomplete: ['url']
-    },
-    birthDate: {
-      attributes: ['birthdate', 'birth-date', 'birth_date', 'dob', 'dateofbirth', 'birthday'],
-      types: ['date', 'text'],
-      autocomplete: ['bday']
-    },
-    age: {
-      attributes: ['age'],
-      types: ['number', 'text'],
-      autocomplete: []
-    },
-    gender: {
-      attributes: ['gender', 'sex'],
-      types: ['select', 'radio'],
-      autocomplete: ['sex']
-    },
-    creditCard: {
-      attributes: ['creditcard', 'credit-card', 'cardnumber', 'card-number', 'ccnumber', 'ccnum'],
-      types: ['text'],
-      autocomplete: ['cc-number']
-    },
-    cvv: {
-      attributes: ['cvv', 'cvc', 'securitycode', 'security-code', 'csc'],
-      types: ['text', 'number'],
-      autocomplete: ['cc-csc']
-    },
-    expirationDate: {
-      attributes: ['expiration', 'expiry', 'exp-date', 'expdate', 'cc-exp'],
-      types: ['text', 'month'],
-      autocomplete: ['cc-exp']
-    },
-    expirationMonth: {
-      attributes: ['exp-month', 'expmonth', 'expirationmonth'],
-      types: ['text', 'select', 'number'],
-      autocomplete: ['cc-exp-month']
-    },
-    expirationYear: {
-      attributes: ['exp-year', 'expyear', 'expirationyear'],
-      types: ['text', 'select', 'number'],
-      autocomplete: ['cc-exp-year']
-    },
-    ssn: {
-      attributes: ['ssn', 'social-security', 'socialsecurity', 'social'],
-      types: ['text'],
-      autocomplete: []
-    },
-    message: {
-      attributes: ['message', 'comment', 'comments', 'description', 'bio', 'about', 'notes'],
-      types: ['textarea'],
-      autocomplete: []
-    },
-    search: {
-      attributes: ['search', 'query', 'q', 'keyword'],
-      types: ['search', 'text'],
-      autocomplete: []
-    },
-    // Work Experience fields - marked with isWorkExp for container-based indexing
-    workExpTitle: {
-      attributes: ['jobtitle', 'job-title', 'job_title', 'position', 'role', 'title'],
-      types: ['text'],
-      autocomplete: ['organization-title'],
-      isWorkExp: true
-    },
-    workExpCompany: {
-      attributes: ['company', 'employer', 'organization', 'business', 'firm'],
-      types: ['text'],
-      autocomplete: ['organization'],
-      isWorkExp: true
-    },
-    workExpLocation: {
-      attributes: ['location', 'city', 'office'],
-      types: ['text'],
-      autocomplete: [],
-      isWorkExp: true
-    },
-    workExpStartDate: {
-      attributes: ['startdate', 'start-date', 'from', 'begin', 'since'],
-      types: ['text', 'date', 'month'],
-      autocomplete: [],
-      isWorkExp: true
-    },
-    workExpEndDate: {
-      attributes: ['enddate', 'end-date', 'to', 'until', 'through'],
-      types: ['text', 'date', 'month'],
-      autocomplete: [],
-      isWorkExp: true
-    },
-    workExpDescription: {
-      attributes: ['description', 'responsibilities', 'duties', 'accomplishments', 'summary'],
-      types: ['textarea'],
-      autocomplete: [],
-      isWorkExp: true
-    },
-    // Education fields - marked with isEdu for container-based indexing
-    eduSchool: {
-      attributes: ['school', 'university', 'college', 'institution', 'academy'],
-      types: ['text'],
-      autocomplete: ['organization'],
-      isEdu: true
-    },
-    eduDegree: {
-      attributes: ['degree', 'qualification', 'diploma', 'certification'],
-      types: ['text', 'select'],
-      autocomplete: [],
-      isEdu: true
-    },
-    eduField: {
-      attributes: ['field', 'major', 'study', 'discipline', 'subject', 'specialization'],
-      types: ['text'],
-      autocomplete: [],
-      isEdu: true
-    },
-    eduGradYear: {
-      attributes: ['gradyear', 'graduation', 'completed', 'finished'],
-      types: ['text', 'number', 'select'],
-      autocomplete: [],
-      isEdu: true
-    },
-    eduStartDate: {
-      attributes: ['edustart', 'edu-start', 'edu_start'],
-      types: ['text', 'date', 'month'],
-      autocomplete: [],
-      isEdu: true
-    },
-    eduEndDate: {
-      attributes: ['eduend', 'edu-end', 'edu_end'],
-      types: ['text', 'date', 'month'],
-      autocomplete: [],
-      isEdu: true
-    }
-  },
+window.FieldDetector = {
+    patterns: {
+        email: { attributes: ['email', 'e-mail', 'mail'], validFor: ['input'], autocomplete: ['email'] },
+        password: { attributes: ['password', 'passwd', 'pwd'], validFor: ['input'], autocomplete: ['current-password', 'new-password'] },
+        confirmPassword: { attributes: ['confirm-password', 'confirmpassword', 'verify-password', 'retype-password', 'repeat-password'], validFor: ['input'], autocomplete: ['new-password'] },
+        firstName: { attributes: ['firstname', 'first-name', 'first_name', 'fname', 'given-name', 'givenname'], validFor: ['input'], autocomplete: ['given-name'] },
+        lastName: { attributes: ['lastname', 'last-name', 'last_name', 'lname', 'surname', 'family-name', 'familyname'], validFor: ['input'], autocomplete: ['family-name'] },
+        fullName: { attributes: ['fullname', 'full-name', 'full_name', 'your-name', 'yourname'], validFor: ['input'], autocomplete: ['name'] },
+        phone: { attributes: ['phone', 'telephone', 'mobile', 'cell', 'phonenumber'], validFor: ['input'], autocomplete: ['tel', 'tel-national'] },
+        address: { attributes: ['address', 'street', 'address1', 'streetaddress', 'address-line'], validFor: ['input', 'textarea'], autocomplete: ['street-address', 'address-line1'] },
+        city: { attributes: ['city', 'town', 'locality'], validFor: ['input'], autocomplete: ['address-level2'] },
+        state: { attributes: ['state', 'province', 'region'], validFor: ['input', 'select'], autocomplete: ['address-level1'] },
+        zipCode: { attributes: ['zip', 'zipcode', 'postal', 'postalcode', 'postcode'], validFor: ['input'], autocomplete: ['postal-code'] },
+        country: { attributes: ['country', 'nation'], validFor: ['input', 'select'], autocomplete: ['country', 'country-name'] },
+        username: { attributes: ['username', 'user-name', 'userid', 'login-id', 'loginid'], validFor: ['input'], autocomplete: ['username'] },
+        company: { attributes: ['company', 'organization', 'employer', 'business', 'companyname'], validFor: ['input'], autocomplete: ['organization'] },
+        jobTitle: { attributes: ['jobtitle', 'job-title', 'job_title', 'position', 'occupation', 'title', 'role'], validFor: ['input'], autocomplete: ['organization-title'] },
+        website: { attributes: ['website', 'url', 'homepage', 'site-url', 'webpage', 'portfolio'], validFor: ['input'], autocomplete: ['url'] },
+        linkedIn: { attributes: ['linkedin', 'linked-in', 'linkedin-url', 'linkedinurl'], validFor: ['input'], autocomplete: [] },
+        birthDate: { attributes: ['birthdate', 'birth-date', 'dob', 'dateofbirth', 'birthday'], validFor: ['input'], autocomplete: ['bday'] },
+        age: { attributes: ['age', 'years-old'], validFor: ['input'], autocomplete: [] },
+        gender: { attributes: ['gender', 'sex'], validFor: ['select', 'input'], autocomplete: ['sex'] },
+        creditCard: { attributes: ['creditcard', 'cardnumber', 'card-number', 'ccnum', 'cc-number'], validFor: ['input'], autocomplete: ['cc-number'] },
+        cvv: { attributes: ['cvv', 'cvc', 'securitycode', 'security-code', 'csc'], validFor: ['input'], autocomplete: ['cc-csc'] },
+        expirationDate: { attributes: ['expiration', 'expiry', 'exp-date', 'expdate'], validFor: ['input'], autocomplete: ['cc-exp'] },
+        expirationMonth: { attributes: ['exp-month', 'expmonth', 'expirationmonth'], validFor: ['input', 'select'], autocomplete: ['cc-exp-month'] },
+        expirationYear: { attributes: ['exp-year', 'expyear', 'expirationyear'], validFor: ['input', 'select'], autocomplete: ['cc-exp-year'] },
+        ssn: { attributes: ['ssn', 'social-security', 'socialsecurity'], validFor: ['input'], autocomplete: [] },
+        subject: { attributes: ['subject', 'topic', 'inquiry', 'regarding'], validFor: ['input'], autocomplete: [] },
+        message: { attributes: ['message', 'comment', 'comments', 'description', 'body', 'content', 'inquiry', 'feedback', 'question', 'details', 'cover-letter', 'coverletter', 'summary', 'about', 'bio'], validFor: ['textarea', 'input'], autocomplete: [] },
+        resumeFile: { attributes: ['resume', 'cv', 'curriculum', 'upload-resume', 'resume-upload', 'attachment', 'file-upload', 'document'], validFor: ['file'], autocomplete: [] },
+        coverLetterFile: { attributes: ['cover-letter', 'coverletter', 'cover_letter', 'letter'], validFor: ['file'], autocomplete: [] },
+        workExpTitle: { attributes: ['job-title', 'jobtitle', 'position-title', 'role-title', 'work-title', 'employment-title'], validFor: ['input'], autocomplete: [], isWorkExp: true },
+        workExpCompany: { attributes: ['company-name', 'companyname', 'employer-name', 'employername', 'organization-name'], validFor: ['input'], autocomplete: [], isWorkExp: true },
+        workExpLocation: { attributes: ['location', 'city', 'office', 'job-location', 'work-location', 'employment-location', 'office-location', 'work-city'], validFor: ['input'], autocomplete: [], isWorkExp: true },
+        workExpStartDate: { attributes: ['start-date', 'startdate', 'from-date', 'fromdate', 'begin-date', 'begindate', 'date-from', 'datefrom', 'employment-start', 'work-start', 'mm/yyyy'], validFor: ['input'], autocomplete: [], isWorkExp: true, subType: 'start' },
+        workExpEndDate: { attributes: ['end-date', 'enddate', 'to-date', 'todate', 'finish-date', 'date-to', 'dateto', 'employment-end', 'work-end', 'leave-date', 'to', 'mm/yyyy'], validFor: ['input'], autocomplete: [], isWorkExp: true, subType: 'end' },
+        workExpDescription: { attributes: ['description', 'responsibilities', 'duties', 'accomplishments', 'summary', 'job-description', 'role-description', 'work-description', 'job-duties', 'role-summary', 'work-summary', 'achievements'], validFor: ['textarea', 'input'], autocomplete: [], isWorkExp: true, isLongText: true },
+        workExpCurrentJob: { attributes: ['current-job', 'currentjob', 'currently-working', 'currentlyworking', 'present', 'i-currently-work', 'still-working'], validFor: ['input'], autocomplete: [], isWorkExp: true },
 
-  getFieldAttributes(element) {
-    const attrs = {
-      id: (element.id || '').toLowerCase(),
-      name: (element.name || '').toLowerCase(),
-      type: (element.type || '').toLowerCase(),
-      placeholder: (element.placeholder || '').toLowerCase(),
-      autocomplete: (element.autocomplete || '').toLowerCase(),
-      className: (element.className || '').toLowerCase(),
-      ariaLabel: (element.getAttribute('aria-label') || '').toLowerCase(),
-      dataTestId: (element.getAttribute('data-testid') || '').toLowerCase(),
-      label: ''
-    };
+        // Education fields
+        eduSchool: { attributes: ['school', 'university', 'college', 'institution', 'academy', 'education'], validFor: ['input'], autocomplete: ['organization'], isEdu: true },
+        eduDegree: { attributes: ['degree', 'qualification', 'diploma', 'certification'], validFor: ['input', 'select'], autocomplete: [], isEdu: true },
+        eduField: { attributes: ['field', 'major', 'study', 'discipline', 'subject', 'specialization'], validFor: ['input'], autocomplete: [], isEdu: true },
+        eduGradYear: { attributes: ['gradyear', 'graduation', 'completed', 'finished'], validFor: ['input', 'number', 'select'], autocomplete: [], isEdu: true },
+        eduStartDate: { attributes: ['edustart', 'edu-start', 'edu_start'], validFor: ['input', 'date', 'month'], autocomplete: [], isEdu: true, subType: 'start' },
+        eduEndDate: { attributes: ['eduend', 'edu-end', 'edu_end'], validFor: ['input', 'date', 'month'], autocomplete: [], isEdu: true, subType: 'end' }
+    },
 
-    const labelElement = this.findAssociatedLabel(element);
-    if (labelElement) {
-      attrs.label = labelElement.textContent.toLowerCase().trim();
-    }
+    isDateField(el, labelText = '') {
+        const text = `${labelText} ${el.placeholder || ''} ${el.name || ''} ${el.id || ''} ${el.getAttribute('aria-label') || ''}`.toLowerCase();
 
-    return attrs;
-  },
+        return (
+            el.type === 'date' ||
+            el.type === 'month' ||
+            el.inputMode === 'numeric' ||
+            text.includes('mm/yyyy') ||
+            text.includes('mm / yyyy') ||
+            text.includes('month') ||
+            text.includes('year') ||
+            text.includes('date')
+        );
+    },
 
-  findAssociatedLabel(element) {
-    if (element.id) {
-      const label = document.querySelector(`label[for="${element.id}"]`);
-      if (label) return label;
-    }
+    detectDatePart(el) {
+        const text = `${el.placeholder || ''} ${el.getAttribute('aria-label') || ''} ${el.name || ''} ${el.id || ''}`.toLowerCase();
+        if (text.includes('mm') || text.includes('month')) return 'month';
+        if (text.includes('yyyy') || text.includes('year')) return 'year';
+        return null;
+    },
 
-    const parentLabel = element.closest('label');
-    if (parentLabel) return parentLabel;
+    isCalendarDateField(el) {
+        if (!el) return false;
 
-    const parent = element.parentElement;
-    if (parent) {
-      const siblingLabel = parent.querySelector('label');
-      if (siblingLabel) return siblingLabel;
+        // Workday / enterprise calendar patterns
+        return Boolean(
+            el.closest('[role="group"]') &&
+            el.closest('[role="group"]')?.querySelector('button, svg') &&
+            (
+                el.getAttribute('aria-haspopup') ||
+                el.closest('[role="group"]')?.innerText?.includes('MM/YYYY') ||
+                el.getAttribute('data-automation-id')?.includes('datePicker')
+            )
+        );
+    },
 
-      const prevSibling = element.previousElementSibling;
-      if (prevSibling) {
-        if (prevSibling.tagName === 'LABEL') return prevSibling;
-        const nestedLabel = prevSibling.querySelector('label');
-        if (nestedLabel) return nestedLabel;
-      }
-    }
+    isMonthYearDateField(el) {
+        return (
+            el.tagName === 'INPUT' &&
+            /MM\/YYYY/i.test(el.placeholder || '') ||
+            el.closest('[role="dialog"]') ||
+            el.closest('[aria-label*="calendar"]')
+        );
+    },
 
-    const wrapper = element.closest('.form-group, .form-field, .field, .input-group, [class*="form"], [class*="field"], [class*="input"]');
-    if (wrapper) {
-      const wrapperLabel = wrapper.querySelector('label');
-      if (wrapperLabel) return wrapperLabel;
-
-      const textElements = wrapper.querySelectorAll('span, div, p');
-      for (const el of textElements) {
-        const text = el.textContent.trim().toLowerCase();
-        if (text && text.length < 50 && !el.querySelector('input, select, textarea')) {
-          return el;
+    getFieldAttributes(element) {
+        const dataAttrs = [];
+        for (const attr of element.attributes) {
+            if (attr.name.startsWith('data-')) {
+                dataAttrs.push(attr.value.toLowerCase());
+            }
         }
-      }
-    }
 
-    let prev = element.previousElementSibling;
-    let attempts = 0;
-    while (prev && attempts < 3) {
-      if (prev.tagName === 'LABEL') return prev;
-      const text = prev.textContent.trim();
-      if (text && text.length < 50 && !prev.querySelector('input, select, textarea')) {
-        return prev;
-      }
-      prev = prev.previousElementSibling;
-      attempts++;
-    }
+        const attrs = {
+            id: (element.id || '').toLowerCase(),
+            name: (element.name || '').toLowerCase(),
+            type: (element.type || '').toLowerCase(),
+            placeholder: (element.placeholder || '').toLowerCase(),
+            autocomplete: (element.autocomplete || '').toLowerCase(),
+            className: (typeof element.className === 'string' ? element.className : '').toLowerCase(),
+            ariaLabel: (element.getAttribute('aria-label') || '').toLowerCase(),
+            ariaDescribedby: (element.getAttribute('aria-describedby') || '').toLowerCase(),
+            dataAttrs: dataAttrs.join(' '),
+            label: ''
+        };
 
-    return null;
-  },
-
-  stateNames: [
-    'alabama', 'alaska', 'arizona', 'arkansas', 'california', 'colorado', 'connecticut',
-    'delaware', 'florida', 'georgia', 'hawaii', 'idaho', 'illinois', 'indiana', 'iowa',
-    'kansas', 'kentucky', 'louisiana', 'maine', 'maryland', 'massachusetts', 'michigan',
-    'minnesota', 'mississippi', 'missouri', 'montana', 'nebraska', 'nevada', 'new hampshire',
-    'new jersey', 'new mexico', 'new york', 'north carolina', 'north dakota', 'ohio',
-    'oklahoma', 'oregon', 'pennsylvania', 'rhode island', 'south carolina', 'south dakota',
-    'tennessee', 'texas', 'utah', 'vermont', 'virginia', 'washington', 'west virginia',
-    'wisconsin', 'wyoming'
-  ],
-
-  stateAbbreviations: [
-    'al', 'ak', 'az', 'ar', 'ca', 'co', 'ct', 'de', 'fl', 'ga', 'hi', 'id', 'il', 'in',
-    'ia', 'ks', 'ky', 'la', 'me', 'md', 'ma', 'mi', 'mn', 'ms', 'mo', 'mt', 'ne', 'nv',
-    'nh', 'nj', 'nm', 'ny', 'nc', 'nd', 'oh', 'ok', 'or', 'pa', 'ri', 'sc', 'sd', 'tn',
-    'tx', 'ut', 'vt', 'va', 'wa', 'wv', 'wi', 'wy'
-  ],
-
-  detectSelectFieldByOptions(selectElement) {
-    const options = Array.from(selectElement.options);
-    if (options.length < 3) return null;
-
-    const optionTexts = options.map(opt => opt.text.toLowerCase().trim());
-    const optionValues = options.map(opt => opt.value.toLowerCase().trim());
-
-    let stateMatches = 0;
-    for (const text of optionTexts) {
-      if (this.stateNames.includes(text) || this.stateAbbreviations.includes(text)) {
-        stateMatches++;
-      }
-    }
-    for (const val of optionValues) {
-      if (this.stateAbbreviations.includes(val)) {
-        stateMatches++;
-      }
-    }
-    if (stateMatches >= 3) return 'state';
-
-    const countryKeywords = ['united states', 'united kingdom', 'canada', 'australia', 'germany', 'france', 'usa', 'uk'];
-    let countryMatches = 0;
-    for (const text of optionTexts) {
-      if (countryKeywords.some(k => text.includes(k))) {
-        countryMatches++;
-      }
-    }
-    if (countryMatches >= 2 || options.length > 50) {
-      const hasCountryLikeOptions = optionTexts.some(t =>
-        countryKeywords.some(k => t.includes(k)) ||
-        t.length > 3 && t.length < 30
-      );
-      if (hasCountryLikeOptions && countryMatches >= 1) return 'country';
-    }
-
-    const months = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
-    let monthMatches = optionTexts.filter(t => months.includes(t)).length;
-    if (monthMatches >= 6) return 'expirationMonth';
-
-    const currentYear = new Date().getFullYear();
-    let yearMatches = optionValues.filter(v => {
-      const num = parseInt(v);
-      return num >= currentYear - 5 && num <= currentYear + 20;
-    }).length;
-    if (yearMatches >= 5) return 'expirationYear';
-
-    return null;
-  },
-
-  detectFieldType(element) {
-    const attrs = this.getFieldAttributes(element);
-    const searchString = `${attrs.id} ${attrs.name} ${attrs.placeholder} ${attrs.className} ${attrs.ariaLabel} ${attrs.dataTestId} ${attrs.label}`;
-
-    if (attrs.autocomplete) {
-      for (const [fieldType, pattern] of Object.entries(this.patterns)) {
-        if (pattern.autocomplete.includes(attrs.autocomplete)) {
-          // Check if there's a prioritized version (work or edu) that also matches
-          if (!pattern.isWorkExp && !pattern.isEdu) {
-            const priorityMatch = this.findPriorityMatch(searchString);
-            if (priorityMatch) return priorityMatch;
-          }
-          return fieldType;
+        const labelElement = this.findAssociatedLabel(element);
+        if (labelElement) {
+            attrs.label = labelElement.textContent.toLowerCase().trim();
         }
-      }
-    }
 
-    if (attrs.type === 'email') return 'email';
-    if (attrs.type === 'password') {
-      if (this.matchesPattern(searchString, this.patterns.confirmPassword.attributes)) {
-        return 'confirmPassword';
-      }
-      return 'password';
-    }
-    if (attrs.type === 'tel') return 'phone';
-    if (attrs.type === 'url') return 'website';
-    if (attrs.type === 'date' && this.matchesPattern(searchString, this.patterns.birthDate.attributes)) {
-      return 'birthDate';
-    }
+        if (element.getAttribute('aria-describedby')) {
+            const describedById = element.getAttribute('aria-describedby');
+            const describedByEl = document.getElementById(describedById);
+            if (describedByEl) {
+                attrs.label += ' ' + describedByEl.textContent.toLowerCase().trim();
+            }
+        }
 
-    // PRIORITY: Check prioritized patterns FIRST (work experience or education)
-    // This ensures specialized fields win over generic attributes (e.g. eduSchool over company)
-    const priorityMatch = this.findPriorityMatch(searchString);
-    if (priorityMatch) {
-      return priorityMatch;
-    }
+        return attrs;
+    },
 
-    // Then check regular patterns
-    for (const [fieldType, pattern] of Object.entries(this.patterns)) {
-      if (pattern.isWorkExp || pattern.isEdu) continue; // Skip - already checked above
-      if (this.matchesPattern(searchString, pattern.attributes)) {
-        return fieldType;
-      }
-    }
+    findAssociatedLabel(element) {
+        if (element.id) {
+            const label = document.querySelector(`label[for="${element.id}"]`);
+            if (label) return label;
+        }
 
-    if (element.tagName.toLowerCase() === 'select') {
-      const detectedByOptions = this.detectSelectFieldByOptions(element);
-      if (detectedByOptions) return detectedByOptions;
-    }
+        const parentLabel = element.closest('label');
+        if (parentLabel) return parentLabel;
 
-    if (element.tagName.toLowerCase() === 'textarea') {
-      return 'message';
-    }
+        const wrapper = element.closest('div, span, fieldset, section');
+        if (wrapper) {
+            const label = wrapper.querySelector('label');
+            if (label) return label;
 
-    return 'text';
-  },
+            const spans = wrapper.querySelectorAll('span, p, div');
+            for (const span of spans) {
+                const text = span.textContent?.trim();
+                if (text && text.length < 100 && span !== element && !span.contains(element)) {
+                    return span;
+                }
+            }
+        }
 
-  matchesWordBoundary(searchString, patterns) {
-    const words = searchString.toLowerCase().split(/[\s_\-.,]+/);
-    return patterns.some(pattern => {
-      const patternLower = pattern.toLowerCase();
-      if (words.includes(patternLower)) return true;
-      if (searchString.toLowerCase().includes(patternLower)) {
-        const regex = new RegExp(`(^|[^a-z])${patternLower}([^a-z]|$)`, 'i');
-        return regex.test(searchString);
-      }
-      return false;
-    });
-  },
+        let prev = element.previousElementSibling;
+        while (prev) {
+            if (prev.tagName === 'LABEL' || (prev.textContent?.trim().length < 100)) {
+                return prev;
+            }
+            prev = prev.previousElementSibling;
+        }
 
-  // Find matching prioritized pattern (work experience or education)
-  findPriorityMatch(searchString) {
-    for (const [fieldType, pattern] of Object.entries(this.patterns)) {
-      if (!pattern.isWorkExp && !pattern.isEdu) continue;
-      if (this.matchesWordBoundary(searchString, pattern.attributes)) {
-        return fieldType;
-      }
-    }
-    return null;
-  },
+        return null;
+    },
 
-  matchesPattern(searchString, patterns) {
-    return patterns.some(pattern => searchString.includes(pattern.toLowerCase()));
-  },
+    detectFieldType(element) {
+        const attrs = this.getFieldAttributes(element);
+        const tagName = element.tagName.toLowerCase();
+        const elementType = tagName === 'input' ? 'input' : tagName;
 
-  analyzeForm(form) {
-    const fields = [];
-    const inputs = form.querySelectorAll('input, select, textarea');
+        if (attrs.autocomplete) {
+            for (const [fieldType, pattern] of Object.entries(this.patterns)) {
+                if (pattern.autocomplete.includes(attrs.autocomplete) && this.isValidForElement(pattern, elementType)) {
+                    return fieldType;
+                }
+            }
+        }
 
-    inputs.forEach((input, index) => {
-      if (this.shouldSkipField(input)) return;
+        if (attrs.type === 'email') return 'email';
+        if (attrs.type === 'password') {
+            const searchString = `${attrs.id} ${attrs.name} ${attrs.placeholder} ${attrs.label}`;
+            if (this.matchesWordBoundary(searchString, this.patterns.confirmPassword.attributes)) {
+                return 'confirmPassword';
+            }
+            return 'password';
+        }
+        if (attrs.type === 'tel') return 'phone';
+        if (attrs.type === 'url') return 'website';
 
-      const fieldType = this.detectFieldType(input);
-      const attrs = this.getFieldAttributes(input);
-      // Check if this field type is a work experience or education field
-      const pattern = this.patterns[fieldType] || {};
-      const isWorkExp = !!pattern.isWorkExp;
-      const isEdu = !!pattern.isEdu;
+        const primaryFields = `${attrs.id} ${attrs.name}`.toLowerCase();
+        const secondaryFields = `${attrs.placeholder} ${attrs.label} ${attrs.ariaLabel} ${attrs.ariaDescribedby}`.toLowerCase();
 
-      fields.push({
-        index,
-        element: input,
-        tagName: input.tagName.toLowerCase(),
-        type: input.type || 'text',
-        detectedType: fieldType,
-        isWorkExp: isWorkExp,
-        isEdu: isEdu,
-        id: input.id,
-        name: input.name,
-        label: attrs.label,
-        required: input.required,
-        value: input.value,
-        options: input.tagName.toLowerCase() === 'select' ? this.getSelectOptions(input) : null
-      });
-    });
+        let bestMatch = null;
+        let bestScore = 0;
 
-    return fields;
-  },
+        // PRIORITY 1: Precise Work/Edu match (must be a priority field)
+        for (const [fieldType, pattern] of Object.entries(this.patterns)) {
+            if (!pattern.isWorkExp && !pattern.isEdu) continue;
+            if (!this.isValidForElement(pattern, elementType)) continue;
 
-  shouldSkipField(input) {
-    const skipTypes = ['hidden', 'submit', 'button', 'reset', 'image', 'file'];
-    if (skipTypes.includes(input.type)) return true;
+            let score = 0;
+            for (const attr of pattern.attributes) {
+                // Boost Work/Edu matches significantly
+                if (this.matchesWordBoundary(primaryFields, [attr])) score += 20;
+                if (this.matchesWordBoundary(secondaryFields, [attr])) score += 15;
+            }
 
-    const style = window.getComputedStyle(input);
-    if (style.display === 'none' || style.visibility === 'hidden') return true;
+            if (score > bestScore) {
+                bestScore = score;
+                bestMatch = fieldType;
+            }
+        }
 
-    if (input.disabled || input.readOnly) return true;
+        // If we have any solid priority match, return it
+        if (bestMatch && bestScore >= 15) {
+            return bestMatch;
+        }
 
-    return false;
-  },
+        // PRIORITY 2: Generic patterns
+        let genericMatch = null;
+        let genericScore = 0;
 
-  getSelectOptions(select) {
-    return Array.from(select.options).map(option => ({
-      value: option.value,
-      text: option.text
-    }));
-  },
+        for (const [fieldType, pattern] of Object.entries(this.patterns)) {
+            if (pattern.isWorkExp || pattern.isEdu) continue;
+            if (!this.isValidForElement(pattern, elementType)) continue;
 
-  findAllForms() {
-    const forms = document.querySelectorAll('form');
-    if (forms.length > 0) {
-      return Array.from(forms);
-    }
+            let score = 0;
+            for (const attr of pattern.attributes) {
+                if (this.matchesWordBoundary(primaryFields, [attr])) score += 10;
+                if (this.matchesWordBoundary(secondaryFields, [attr])) score += 5;
+            }
 
-    const orphanInputs = document.querySelectorAll('input:not(form input), select:not(form select), textarea:not(form textarea)');
-    if (orphanInputs.length > 0) {
-      return [{ orphan: true, elements: orphanInputs }];
-    }
+            if (score > genericScore) {
+                genericScore = score;
+                genericMatch = fieldType;
+            }
+        }
 
-    return [];
-  },
+        // Return best overall, favoring priority if its score is decent
+        if (bestMatch && bestScore >= 10 && bestScore >= genericScore) return bestMatch;
+        if (genericMatch && genericScore >= 5) return genericMatch;
 
-  getAllFields() {
-    const allFields = [];
-    const forms = this.findAllForms();
+        // DIAGNOSTIC fallback logic...
 
-    forms.forEach((form, formIndex) => {
-      if (form.orphan) {
-        form.elements.forEach((element, fieldIndex) => {
-          if (this.shouldSkipField(element)) return;
-          allFields.push({
-            formIndex,
-            fieldIndex,
-            element,
-            ...this.analyzeField(element)
-          });
+
+        if (bestMatch && bestScore >= 5) {
+            return bestMatch;
+        }
+
+        if (tagName === 'textarea') {
+            return 'message';
+        }
+
+        const labelLower = attrs.label.toLowerCase();
+        if (labelLower.includes('name') && !labelLower.includes('user')) {
+            if (labelLower.includes('full') || labelLower.includes('your')) {
+                return 'fullName';
+            }
+            if (labelLower.includes('first')) return 'firstName';
+            if (labelLower.includes('last')) return 'lastName';
+            return 'fullName';
+        }
+
+        return 'text';
+    },
+
+    isValidForElement(pattern, elementType) {
+        if (!pattern.validFor) return true;
+        return pattern.validFor.includes(elementType);
+    },
+
+    matchesWordBoundary(searchString, patterns) {
+        if (!searchString) return false;
+        const searchLower = searchString.toLowerCase();
+
+        // 1. Precise Split Check
+        const words = searchLower.split(/[\s_\-.,/()|:*&%#@!]+/).filter(w => w.length > 0);
+
+        for (const pattern of patterns) {
+            const patternLower = pattern.toLowerCase();
+
+            // Exact word match
+            if (words.includes(patternLower)) return true;
+
+            // 2. Regex word boundary check (covers cases like "role:description" or "location*")
+            try {
+                const regex = new RegExp(`(^|[^a-z0-9])${patternLower}([^a-z0-9]|$)`, 'i');
+                if (regex.test(searchLower)) return true;
+            } catch (e) { }
+
+            // 3. Fallback for joined words like "worklocation"
+            if (searchLower.includes(patternLower) && patternLower.length > 3) {
+                return true;
+            }
+        }
+        return false;
+    },
+
+    shouldSkipField(input, includeFileInputs = false) {
+        const skipTypes = ['hidden', 'submit', 'button', 'reset', 'image'];
+        if (!includeFileInputs) {
+            skipTypes.push('file');
+        }
+        if (input.type && skipTypes.includes(input.type)) return true;
+
+        if (input.disabled || input.readOnly) return true;
+
+        try {
+            const style = window.getComputedStyle(input);
+            if (style.display === 'none') return true;
+            if (style.visibility === 'hidden' && style.position !== 'absolute') return true;
+        } catch (e) { }
+
+        const rect = input.getBoundingClientRect();
+        if (rect.width === 0 && rect.height === 0) return true;
+
+        return false;
+    },
+
+    getSelectOptions(select) {
+        return Array.from(select.options).map(option => ({
+            value: option.value,
+            text: option.text
+        }));
+    },
+
+    getFileInputs() {
+        const fileInputs = [];
+        const inputs = document.querySelectorAll('input[type="file"]');
+
+        inputs.forEach(input => {
+            if (input.disabled) return;
+
+            const attrs = this.getFieldAttributes(input);
+
+            let label = attrs.label;
+            if (!label || label.trim() === '') {
+                const dropZone = input.closest('[data-automation-id*="upload"], [class*="upload"], [class*="drop"]');
+                if (dropZone) {
+                    const labelEl = dropZone.closest('div, section')?.querySelector('label, h3, h4, p, span');
+                    if (labelEl) label = labelEl.textContent.toLowerCase().trim();
+                }
+
+                if (!label) {
+                    const wrapper = input.closest('div[class*="upload"], div[class*="file"], div[class*="drop"], section');
+                    if (wrapper) {
+                        const prevSibling = wrapper.previousElementSibling;
+                        if (prevSibling && (prevSibling.tagName === 'LABEL' || prevSibling.tagName === 'H3' || prevSibling.tagName === 'P')) {
+                            label = prevSibling.textContent.toLowerCase().trim();
+                        }
+                    }
+                }
+            }
+
+            const searchString = `${attrs.id} ${attrs.name} ${attrs.placeholder} ${attrs.className} ${attrs.ariaLabel} ${label} ${attrs.dataAttrs}`.toLowerCase();
+
+            let fileType = 'unknown';
+
+            const resumePatterns = ['resume', 'cv', 'curriculum', 'curriculum-vitae', 'upload-resume', 'upload a file', 'attachments'];
+            const coverLetterPatterns = ['cover-letter', 'coverletter', 'cover_letter', 'cover letter'];
+
+            if (resumePatterns.some(p => searchString.includes(p))) {
+                fileType = 'resumeFile';
+            } else if (coverLetterPatterns.some(p => searchString.includes(p))) {
+                fileType = 'coverLetterFile';
+            } else {
+                const acceptAttr = input.accept || '';
+                if (acceptAttr.includes('.pdf') || acceptAttr.includes('.doc') || acceptAttr.includes('application/')) {
+                    fileType = 'resumeFile';
+                }
+            }
+
+            fileInputs.push({
+                element: input,
+                fileType,
+                id: input.id,
+                name: input.name,
+                label: label || attrs.label,
+                accept: input.accept
+            });
         });
-      } else {
-        const fields = this.analyzeForm(form);
-        fields.forEach(field => {
-          allFields.push({
-            formIndex,
-            ...field
-          });
+
+        return fileInputs;
+    },
+
+    getAllFields(includeFileInputs = true) {
+        const allFields = [];
+        const elements = this.findAllInputElements();
+        const seen = new WeakSet();
+        let fieldIndex = 0;
+
+        elements.forEach((element) => {
+            if (seen.has(element)) return;
+            seen.add(element);
+
+            if (this.shouldSkipField(element, includeFileInputs)) return;
+
+            const fieldType = this.detectFieldType(element);
+            const attrs = this.getFieldAttributes(element);
+
+            const tagName = element.tagName.toLowerCase();
+            const isContentEditable = element.contentEditable === 'true' || element.getAttribute('contenteditable') === 'true';
+
+            const pattern = this.patterns[fieldType] || {};
+            const isWorkExp = !!pattern.isWorkExp;
+            const isEdu = !!pattern.isEdu;
+
+            const labelText = attrs.label || '';
+            const isDate = this.isDateField(element, labelText);
+
+            allFields.push({
+                index: fieldIndex++,
+                element,
+                tagName,
+                type: element.type || (isContentEditable ? 'contenteditable' : 'text'),
+                detectedType: fieldType,
+                isWorkExp: isWorkExp,
+                isEdu: isEdu,
+                isLongText: !!pattern.isLongText,
+                isDate: isDate,
+                isWorkExpDate: isWorkExp && isDate,
+                isCalendarDate: this.isCalendarDateField(element),
+                isDatePicker: this.isMonthYearDateField(element),
+                subType: pattern.subType || null,
+                datePart: this.detectDatePart(element),
+                id: element.id,
+                name: element.name || element.getAttribute('name'),
+                label: attrs.label,
+                required: element.required || element.getAttribute('aria-required') === 'true',
+                options: tagName === 'select' ? this.getSelectOptions(element) : null,
+                isContentEditable
+            });
         });
-      }
-    });
 
-    return allFields;
-  },
+        if (includeFileInputs) {
+            const fileInputs = this.getFileInputs();
+            fileInputs.forEach(fi => {
+                if (!seen.has(fi.element)) {
+                    allFields.push({
+                        index: fieldIndex++,
+                        element: fi.element,
+                        tagName: 'input',
+                        type: 'file',
+                        detectedType: fi.fileType,
+                        id: fi.id,
+                        name: fi.name,
+                        label: fi.label || 'File Upload',
+                        required: fi.element.required,
+                        options: null,
+                        isContentEditable: false,
+                        accept: fi.accept,
+                        fileType: fi.fileType
+                    });
+                }
+            });
+        }
 
-  analyzeField(element) {
-    const fieldType = this.detectFieldType(element);
-    const attrs = this.getFieldAttributes(element);
-    // Check if this field type is a work experience or education field
-    const pattern = this.patterns[fieldType] || {};
-    const isWorkExp = !!pattern.isWorkExp;
-    const isEdu = !!pattern.isEdu;
+        const workdayQuestions = this.detectApplicationQuestions();
+        allFields.push(...workdayQuestions);
+        return allFields;
+    },
 
-    return {
-      tagName: element.tagName.toLowerCase(),
-      type: element.type || 'text',
-      detectedType: fieldType,
-      isWorkExp: isWorkExp,
-      isEdu: isEdu,
-      id: element.id,
-      name: element.name,
-      label: attrs.label,
-      required: element.required,
-      value: element.value,
-      options: element.tagName.toLowerCase() === 'select' ? this.getSelectOptions(element) : null
-    };
-  }
+    // Helper: Deep query selector all (traverses Shadow DOM)
+    collectDeep(root, selector) {
+        const results = [];
+        try {
+            // 1. Local results
+            const nodes = root.querySelectorAll(selector);
+            results.push(...nodes);
+
+            // 2. Traversal
+            const all = root.querySelectorAll('*');
+            for (const el of all) {
+                if (el.shadowRoot) {
+                    results.push(...this.collectDeep(el.shadowRoot, selector));
+                }
+            }
+        } catch (e) {
+            // console.warn('Shadow DOM access error:', e);
+        }
+        return results;
+    },
+
+    detectApplicationQuestions(root = document) {
+        // 🧠 WORKDAY INSIGHT: Questions are UI blocks (fieldset), not just inputs.
+        const questions = [];
+
+        // 1. Deep Scan for Containers (supporting Shadow DOM)
+        const containers = this.collectDeep(root, 'fieldset legend, fieldset [data-automation-id="richText"], [data-automation-id^="formField-"]');
+
+        containers.forEach((node) => {
+            // Context A: Fieldset Based
+            const fieldset = node.closest('fieldset');
+            if (fieldset) {
+                const button = fieldset.querySelector('button[aria-haspopup="listbox"], button[aria-haspopup="true"]');
+                // Only process if we found a dropdown button
+                if (button) {
+                    // Extract text (prefer legend/richText if that's what we matched, otherwise find it)
+                    let text = node.innerText;
+                    if (node.tagName === 'FIELDSET') {
+                        const legend = node.querySelector('legend');
+                        text = legend ? legend.innerText : (node.innerText || '');
+                    }
+
+                    text = text.replace(/\u002A/g, '').replace(/\s+/g, ' ').trim(); // Logic restored with escaped asterisk
+
+                    if (text.length > 5 && !questions.some(q => q.element === button)) {
+                        questions.push({
+                            type: 'applicationQuestion', // Will be refined by ApplicationQuestions.match later
+                            questionText: text,
+                            element: button,
+                            tagName: 'button',
+                            detectedType: 'applicationQuestion',
+                            label: text,
+                            container: fieldset,
+                            options: this.getSelectOptions(button)
+                        });
+                    }
+                }
+            }
+
+            // Context B: Data Automation Container (Generic)
+            if (node.hasAttribute && node.getAttribute('data-automation-id')?.startsWith('formField-')) {
+                const button = node.querySelector('button[aria-haspopup="listbox"]');
+                if (button && !questions.some(q => q.element === button)) {
+                    // Try to find label in this container or children
+                    let labelEl = node.querySelector('label, [data-automation-id="formField-label"], legend');
+
+                    // Deep fallback for label if not immediate
+                    if (!labelEl) {
+                        const richText = node.querySelector('[data-automation-id="richText"]');
+                        if (richText) labelEl = richText;
+                    }
+
+                    const text = labelEl ? labelEl.innerText.trim() : '';
+
+                    if (text) {
+                        questions.push({
+                            type: 'applicationQuestion',
+                            questionText: text.replace(/\u002A/g, '').trim(),
+                            element: button,
+                            tagName: 'button',
+                            detectedType: 'applicationQuestion',
+                            label: text,
+                            container: node
+                        });
+                    }
+                }
+            }
+        });
+
+        // 2. Fallback for "Solo Buttons" (Deep Scan)
+        const allButtons = this.collectDeep(root, 'button[aria-haspopup="listbox"]');
+        const soloButtons = allButtons.filter(btn => !questions.some(q => q.element === btn));
+
+        soloButtons.forEach((button, index) => {
+            let labelText = '';
+            if (typeof window.ApplicationQuestions !== 'undefined' && typeof window.ApplicationQuestions.extractQuestionText === 'function') {
+                labelText = window.ApplicationQuestions.extractQuestionText(button);
+            } else if (typeof extractQuestionText === 'function') {
+                labelText = extractQuestionText(button);
+            } else {
+                labelText = button.getAttribute('aria-label') || '';
+            }
+
+            if (labelText && labelText.length > 5) {
+                questions.push({
+                    index: 9500 + index, // High index to distinguish
+                    element: button,
+                    tagName: 'button',
+                    type: 'applicationQuestion',
+                    detectedType: 'applicationQuestion',
+                    automationId: button.getAttribute('data-automation-id'),
+                    id: button.id || `solo-q-${index}`,
+                    name: button.name || button.getAttribute('name'),
+                    label: labelText,
+                    questionText: labelText,
+                    required: button.getAttribute('aria-label')?.toLowerCase().includes('required'),
+                    value: button.innerText
+                });
+            }
+        });
+
+        if (questions.length > 0) {
+            console.log(`[FormFill] Detected ${questions.length} Workday application questions.`);
+            // Diagnostic logging
+            questions.forEach(q => console.log(`[AppQ] Found: "${q.label}" ->`, q.element));
+        }
+
+        return questions;
+    },
+
+    findAllInputElements() {
+        const elements = [];
+        const selector = 'input, select, textarea, [contenteditable="true"], [role="textbox"], [role="combobox"]';
+
+        // Use recursive deep collection
+        elements.push(...this.collectDeep(document, selector));
+
+        // Also check iframes explicitly (though collectDeep usually handles shadow, iframes are different)
+        try {
+            const iframes = document.querySelectorAll('iframe');
+            iframes.forEach(iframe => {
+                try {
+                    const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+                    if (iframeDoc) {
+                        elements.push(...this.collectDeep(iframeDoc, selector));
+                    }
+                } catch (e) { }
+            });
+        } catch (e) { }
+
+        return elements;
+    },
+
+    traverseShadowDOM(root, elements, selector = 'input, select, textarea') {
+        if (!root) return;
+
+        const allElements = root.querySelectorAll('*');
+        allElements.forEach(el => {
+            if (el.shadowRoot) {
+                elements.push(...el.shadowRoot.querySelectorAll(selector));
+                this.traverseShadowDOM(el.shadowRoot, elements, selector);
+            }
+        });
+    }
 };
 
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = FieldDetector;
+    module.exports = FieldDetector;
 }

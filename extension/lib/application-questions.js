@@ -1,4 +1,4 @@
-const ApplicationQuestions = {
+window.ApplicationQuestions = {
   categories: {
     workAuthorization: {
       name: 'Work Authorization',
@@ -6,50 +6,46 @@ const ApplicationQuestions = {
         authorizedToWork: {
           label: 'Authorized to work in the US',
           patterns: [
-            'legally able to work',
+            'legally authorized to work in the us',
+            'legally authorized to work',
+            'authorized to work in the us',
             'authorized to work',
             'work authorization',
+            'legally able to work',
             'eligible to work',
             'legally authorized',
             'right to work',
             'proof that you are legally',
             'legally eligible',
             'employment eligibility',
-            'legally permitted to work'
+            'legally permitted to work',
+            'proof.*legally authorized',
+            'can you provide proof.*legally able to work'
           ],
           type: 'select',
           defaultAnswer: 'Yes',
           options: ['Yes', 'No']
         },
-        requiresSponsorship: {
+        requiresSponsorshipNow: {
           label: 'Requires visa sponsorship now',
           patterns: [
-            'require sponsorship',
-            'need sponsorship',
-            'visa sponsorship',
-            'employment based visa',
-            'h-1b',
-            'h1b',
-            'work visa',
-            'immigration sponsorship',
             'currently require sponsorship',
-            'do you currently require'
+            'currently require.*visa',
+            'currently require.*employment based visa',
+            'require sponsorship.*to work for this company',
+            'currently require sponsorship.*in order to work'
           ],
           type: 'select',
           defaultAnswer: 'No',
           options: ['Yes', 'No']
         },
-        futureSponsorship: {
+        requiresSponsorshipFuture: {
           label: 'Will require sponsorship in future',
           patterns: [
-            'future require sponsorship',
-            'will you require sponsorship',
-            'in the future require',
-            'future sponsorship',
-            'will you need sponsorship',
-            'future need visa',
-            'future.*sponsorship',
-            'will you in the future'
+            'will you in the future require',
+            'in the future.*require sponsorship',
+            'future.*employment based visa',
+            'will you in the future require sponsorship'
           ],
           type: 'select',
           defaultAnswer: 'No',
@@ -63,13 +59,20 @@ const ApplicationQuestions = {
         currentlyEmployedAtCompany: {
           label: 'Currently work at this company',
           patterns: [
+            'currently work at this company (default)',
+            'currently work at this company',
             'currently work at',
             'do you currently work',
             'currently employed at',
-            'presently employed',
+            'presently employed at',
             'currently employed by',
             'are you currently employed at',
-            'do you currently work at'
+            'do you currently work at',
+            'do you currently work',
+            'do you currently work at cvs health',
+            'do you currently work at cvs pharmacy',
+            'do you currently work at aetna',
+            'do you currently work.* subsidiaries'
           ],
           type: 'select',
           defaultAnswer: 'No',
@@ -78,6 +81,7 @@ const ApplicationQuestions = {
         previouslyEmployedAtCompany: {
           label: 'Previously worked at this company',
           patterns: [
+            'previously worked at company',
             'ever been employed',
             'previously employed',
             'ever worked at',
@@ -86,7 +90,10 @@ const ApplicationQuestions = {
             'worked at.*before',
             'past employee',
             'prior employment',
-            'have you ever worked'
+            'have you ever worked at',
+            'have you ever worked',
+            'have you ever been employed by cvs health',
+            'ever been employed by.*subsidiaries'
           ],
           type: 'select',
           defaultAnswer: 'No',
@@ -95,6 +102,7 @@ const ApplicationQuestions = {
         previousGovernmentEmployee: {
           label: 'Former government employee',
           patterns: [
+            'previously worked for government',
             'government employee',
             'federal.*state.*local.*government',
             'government entity',
@@ -104,7 +112,31 @@ const ApplicationQuestions = {
             'employed by.*government',
             'federal employee',
             'state employee',
-            'public sector'
+            'public sector',
+            'federal.*state or local government entity'
+          ],
+          type: 'select',
+          defaultAnswer: 'No',
+          options: ['Yes', 'No']
+        },
+        currentColleague: {
+          label: 'Current colleague or contractor',
+          patterns: [
+            'current colleague',
+            'current contractor',
+            'currently work for cvs health',
+            'current colleague or contract worker'
+          ],
+          type: 'select',
+          defaultAnswer: 'No',
+          options: ['Yes', 'No']
+        },
+        workedAtCvsPast12Months: {
+          label: 'Worked at CVS in past 12 months',
+          patterns: [
+            'worked for cvs health.*past 12 months',
+            'worked at cvs.*last 12 months',
+            'cvs health.*past year'
           ],
           type: 'select',
           defaultAnswer: 'No',
@@ -118,14 +150,11 @@ const ApplicationQuestions = {
         isOver18: {
           label: 'At least 18 years old',
           patterns: [
-            'at least 18',
-            '18 years old',
-            'over 18',
-            'minimum age',
-            'legal age',
-            'of legal age',
-            'are you 18',
-            'eighteen years'
+            'at least 18 years of age',
+            'at least 18 years old',
+            'age 18 or older',
+            '18 years of age or older',
+            'at least eighteen'
           ],
           type: 'select',
           defaultAnswer: 'Yes',
@@ -134,10 +163,11 @@ const ApplicationQuestions = {
         isOver21: {
           label: 'At least 21 years old',
           patterns: [
+            'at least 21 years old',
             'at least 21',
             '21 years old',
-            'over 21',
-            'twenty-one years'
+            'twenty-one years',
+            'over 21'
           ],
           type: 'select',
           defaultAnswer: 'Yes',
@@ -153,7 +183,8 @@ const ApplicationQuestions = {
             'are you a veteran',
             'military service',
             'u.s. military',
-            'veteran of'
+            'veteran of',
+            'please select the veteran status which most accurately describes how you identify yourself'
           ],
           type: 'select',
           defaultAnswer: 'No',
@@ -163,9 +194,8 @@ const ApplicationQuestions = {
           label: 'Military spouse',
           patterns: [
             'military spouse',
-            'spouse.*partner.*military',
-            'spouse or partner.*serves',
-            'spouse.*serves.*military',
+            'spouse or partner.*serves.*military',
+            'spouse or partner of someone who serves',
             'military family'
           ],
           type: 'select',
@@ -191,7 +221,8 @@ const ApplicationQuestions = {
             'gender',
             'sex',
             'male.*female',
-            'identify as'
+            'identify as',
+            'please select your gender'
           ],
           type: 'select',
           defaultAnswer: 'Prefer not to say',
@@ -203,11 +234,33 @@ const ApplicationQuestions = {
             'race',
             'ethnicity',
             'ethnic background',
-            'racial background'
+            'racial background',
+            'please select the ethnicity which most accurately describes how you identify yourself'
           ],
           type: 'select',
           defaultAnswer: 'Prefer not to say',
           options: ['Prefer not to say']
+        },
+        hispanicOrLatino: {
+          label: 'Hispanic or Latino',
+          patterns: [
+            'are you hispanic or latino',
+            'hispanic or latino'
+          ],
+          type: 'select',
+          defaultAnswer: 'No',
+          options: ['Yes', 'No', 'Prefer not to say']
+        },
+        country: {
+          label: 'Country',
+          patterns: [
+            'country',
+            'country of residence',
+            'location country'
+          ],
+          type: 'select',
+          defaultAnswer: 'United States',
+          options: ['United States', 'Canada', 'United Kingdom', 'India']
         }
       }
     },
@@ -229,7 +282,7 @@ const ApplicationQuestions = {
             'what is your.*salary'
           ],
           type: 'text',
-          defaultAnswer: '',
+          defaultAnswer: '$80,000 - $100,000',
           placeholder: '$80,000 - $100,000'
         },
         hourlyRate: {
@@ -293,8 +346,9 @@ const ApplicationQuestions = {
         canWorkRemote: {
           label: 'Can work remotely',
           patterns: [
-            'work remotely',
+            'can work remotely',
             'remote work',
+            'work remotely',
             'work from home',
             'telecommute',
             'remote position'
@@ -306,6 +360,7 @@ const ApplicationQuestions = {
         canWorkOnsite: {
           label: 'Can work on-site',
           patterns: [
+            'can work on-site',
             'work on-site',
             'work onsite',
             'in-office',
@@ -319,10 +374,11 @@ const ApplicationQuestions = {
         canWorkHybrid: {
           label: 'Can work hybrid',
           patterns: [
+            'can work hybrid',
             'hybrid',
-            'combination.*remote.*office',
+            'hybrid schedule',
             'flexible work',
-            'hybrid schedule'
+            'combination.*remote.*office'
           ],
           type: 'select',
           defaultAnswer: 'Yes',
@@ -331,6 +387,7 @@ const ApplicationQuestions = {
         availableForTravel: {
           label: 'Available for travel',
           patterns: [
+            'available for business travel',
             'available for travel',
             'willing to travel',
             'travel required',
@@ -344,6 +401,7 @@ const ApplicationQuestions = {
         travelPercentage: {
           label: 'Travel percentage acceptable',
           patterns: [
+            'travel percentage acceptable',
             'travel percentage',
             'percent.*travel',
             'how much travel',
@@ -401,13 +459,16 @@ const ApplicationQuestions = {
         disciplinaryActions: {
           label: 'Professional disciplinary actions',
           patterns: [
+            'professional disciplinary actions',
             'disciplinary action',
             'license.*revoked',
             'certification.*suspended',
             'professional.*sanction',
             'reprimand',
             'probation.*license',
-            'credential.*action'
+            'credential.*action',
+            'subject of.*disciplinary action',
+            'ever been.*disciplinary.*action'
           ],
           type: 'select',
           defaultAnswer: 'No',
@@ -416,12 +477,16 @@ const ApplicationQuestions = {
         governmentExclusion: {
           label: 'Government program exclusion',
           patterns: [
+            'excluded from government programs',
             'excluded.*debarred',
+            'federal.*state.*excluded',
             'government.*procurement',
             'medicare.*medicaid.*excluded',
-            'federal.*state.*excluded',
             'excluded from participation',
-            'ineligible from participation'
+            'ineligible from participation',
+            'excluded, debarred, suspended or otherwise ineligible',
+            'excluded from.*federal or state health care program',
+            'excluded from.*participation'
           ],
           type: 'select',
           defaultAnswer: 'No',
@@ -484,7 +549,9 @@ const ApplicationQuestions = {
             'sms.*communication',
             'communicate.*via text',
             'receive text',
-            'text notification'
+            'text notification',
+            'authorize cvs health to communicate with me via text',
+            'authorize.*communicate.*via text'
           ],
           type: 'select',
           defaultAnswer: 'Yes',
@@ -510,6 +577,7 @@ const ApplicationQuestions = {
         howDidYouHear: {
           label: 'How did you hear about us',
           patterns: [
+            'how did you hear about us (default)',
             'how did you hear',
             'how did you find',
             'where did you learn',
@@ -537,6 +605,7 @@ const ApplicationQuestions = {
         previousApplicant: {
           label: 'Previously applied',
           patterns: [
+            'previously applied to this company (default)',
             'previously applied',
             'applied before',
             'prior application',
@@ -553,8 +622,8 @@ const ApplicationQuestions = {
 
   defaultAnswers: {
     authorizedToWork: 'Yes',
-    requiresSponsorship: 'No',
-    futureSponsorship: 'No',
+    requiresSponsorshipNow: 'No',
+    requiresSponsorshipFuture: 'No',
     currentlyEmployedAtCompany: 'No',
     previouslyEmployedAtCompany: 'No',
     previousGovernmentEmployee: 'No',
@@ -587,7 +656,9 @@ const ApplicationQuestions = {
     emailAuthorization: 'Yes',
     howDidYouHear: 'LinkedIn',
     referralName: '',
-    previousApplicant: 'No'
+    previousApplicant: 'No',
+    currentColleague: 'No',
+    workedAtCvsPast12Months: 'No'
   },
 
   detectQuestion(labelText, options = []) {
@@ -721,56 +792,71 @@ const ApplicationQuestions = {
     return null;
   },
 
-  match(text) {
-    if (!text) return null;
+  getQuestionDef(questionKey) {
     for (const category of Object.values(this.categories)) {
-      for (const q of Object.values(category.questions)) {
-        if (q.patterns.some(p => new RegExp(p, 'i').test(text))) {
-          return q;
-        }
+      if (category.questions[questionKey]) {
+        return category.questions[questionKey];
       }
     }
     return null;
+  },
+
+  extractQuestionText(element) {
+    if (!element) return '';
+
+    // 1. Explicit Aria Label
+    const ariaLabel = element.getAttribute('aria-label');
+    if (ariaLabel) return ariaLabel.trim();
+
+    // 2. Explicit ID Label
+    if (element.id) {
+      const label = document.querySelector(`label[for="${element.id}"]`);
+      if (label) return label.innerText.trim();
+    }
+
+    // 3. Closest Logical Container (Fieldset/Group)
+    const container = element.closest('fieldset, div[role="group"], div[data-automation-id^="formField"]');
+    if (container) {
+      // Priority: Legend -> RichText -> Label
+      const legend = container.querySelector('legend');
+      if (legend) return legend.innerText.trim();
+
+      const richText = container.querySelector('[data-automation-id="richText"]');
+      if (richText) return richText.innerText.trim();
+
+      const label = container.querySelector('label');
+      if (label) return label.innerText.trim();
+    }
+
+    // 4. Traversal: Search previous siblings and parents for meaningful text
+    let current = element;
+    for (let i = 0; i < 4; i++) { // Max depth
+      if (!current) break;
+
+      const prev = current.previousElementSibling;
+      if (prev) {
+        // Look for text-heavy elements
+        if (['LABEL', 'H3', 'H4', 'H5', 'P', 'SPAN', 'DIV'].includes(prev.tagName)) {
+          const text = prev.innerText.trim();
+          // Heuristic: Question text usually has some length but isn't a whole paragraph
+          if (text.length > 5 && text.length < 200) return text;
+        }
+        // If prev is just a wrapper, maybe go into it? (Skip for now, keep robust)
+        current = prev; // Continue sideways
+      } else {
+        // Go up if no previous sibling
+        current = current.parentElement;
+        // Don't go too high (e.g., body)
+        if (current === document.body) break;
+
+        // Check immediate parent's text if it's a wrapper like a label
+        if (current.tagName === 'LABEL') return current.innerText.trim();
+      }
+    }
+
+    return '';
   }
 };
-
-function extractQuestionText(element) {
-  const texts = [];
-
-  // 1️⃣ <label for="">
-  if (element.id) {
-    const label = document.querySelector(`label[for="${element.id}"]`);
-    if (label?.innerText) texts.push(label.innerText);
-  }
-
-  // 2️⃣ Wrapped label
-  const wrap = element.closest('label');
-  if (wrap?.innerText) texts.push(wrap.innerText);
-
-  // 3️⃣ Closest field container (THIS IS THE KEY)
-  const container = element.closest(
-    '[data-automation-id*="question"], [role="group"], fieldset, section, li, div'
-  );
-
-  if (container) {
-    container.querySelectorAll('legend, label, span, p, h1, h2, h3')
-      .forEach(el => {
-        const t = el.innerText?.trim();
-        if (t && t.length > 10) texts.push(t);
-      });
-  }
-
-  // 4️⃣ aria-labelledby
-  const aria = element.getAttribute('aria-labelledby');
-  if (aria) {
-    aria.split(' ').forEach(id => {
-      const el = document.getElementById(id);
-      if (el?.innerText) texts.push(el.innerText);
-    });
-  }
-
-  return texts.join(' ').toLowerCase();
-}
 
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = ApplicationQuestions;

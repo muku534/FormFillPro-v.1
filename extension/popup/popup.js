@@ -150,7 +150,7 @@ class PopupController {
     const appqFields = [
       'authorizedToWork', 'requiresSponsorship', 'futureSponsorship',
       'currentlyEmployedAtCompany', 'previouslyEmployedAtCompany', 'previousGovernmentEmployee',
-      'isOver18', 'isOver21', 'veteranStatus', 'militarySpouse', 'disabilityStatus', 'gender',
+      'isOver18', 'isOver21', 'veteranStatus', 'militarySpouse', 'disabilityStatus', 'gender', 'ethnicity', 'hispanicOrLatino',
       'salaryExpectation', 'hourlyRate', 'startDate', 'noticePeriod',
       'willingToRelocate', 'canWorkRemote', 'canWorkOnsite', 'canWorkHybrid',
       'availableForTravel', 'travelPercentage',
@@ -1162,7 +1162,7 @@ class PopupController {
     try {
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
       const results = await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
+        target: { tabId: tab.id, allFrames: true },
         func: () => {
           if (typeof FieldDetector !== 'undefined') {
             return FieldDetector.getAllFields(true).map(f => ({
@@ -1180,7 +1180,8 @@ class PopupController {
         }
       });
 
-      this.detectedFields = results[0]?.result || [];
+      // Combine results from all frames
+      this.detectedFields = results.flatMap(r => r.result || []);
       this.renderFieldsList();
     } catch (error) {
       console.error('Scan error:', error);
@@ -1559,7 +1560,7 @@ Write a professional response in first person as the applicant. Be concise but s
       const applicationQuestions = this.applicationQuestions;
 
       await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
+        target: { tabId: tab.id, allFrames: true },
         args: [importedRow, headers, fillMode, userProfile, aiSettings, templateFields, applicationQuestions],
         func: async (dataRow, dataHeaders, mode, profile, ai, savedTemplateFields, appQuestions) => {
           if (dataRow && dataHeaders) {
@@ -1617,7 +1618,7 @@ Write a professional response in first person as the applicant. Be concise but s
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
       await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
+        target: { tabId: tab.id, allFrames: true },
         args: [type],
         func: (fillType) => {
           const profile = FakeDataGenerator.generateProfile();

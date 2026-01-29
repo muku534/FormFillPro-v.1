@@ -44,15 +44,7 @@ const SmartFiller = {
     }
   },
 
-  async fillField(element, fieldType, profile) {
-    // ✅ SAFE: application questions FIRST
-    if (typeof ApplicationQuestionFiller !== 'undefined') {
-      const appQResult = ApplicationQuestionFiller.tryFill(element, profile);
-      if (appQResult?.filled) {
-        return { success: true, value: appQResult.value, source: 'application-question' };
-      }
-    }
-
+  async fillField(element, fieldType, profile, options = {}) {
     const settings = await this.getSettings();
 
     if (settings.mode === this.modes.QUICK) {
@@ -172,6 +164,15 @@ const SmartFiller = {
     if (typeof BlockContainerMapper !== 'undefined') {
       if (profile.workExperience) BlockContainerMapper.reset('work', profile.workExperience);
       if (profile.education) BlockContainerMapper.reset('edu', profile.education);
+    }
+
+    // 🔥 NEW: Dedicated Application Question pass (Parallel pipeline)
+    // Run this before normal field filling to ensure UI blocks are handled
+    const storageResult = await chrome.storage.local.get(['application_questions']);
+    const applicationQuestions = storageResult.application_questions || {};
+
+    if (typeof ApplicationQuestionFiller !== 'undefined') {
+      await ApplicationQuestionFiller.fillAllQuestions(profile, applicationQuestions);
     }
 
     const results = [];

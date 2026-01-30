@@ -858,7 +858,7 @@ const MultiBlockFiller = {
     workExpStartDate: 'work', workExpEndDate: 'work', workExpDescription: 'work',
     workExpCurrentJob: 'work',
     eduSchool: 'edu', eduDegree: 'edu', eduField: 'edu',
-    eduGradYear: 'edu', eduStartDate: 'edu', eduEndDate: 'edu'
+    eduGradYear: 'edu', eduGPA: 'edu', eduStartDate: 'edu', eduEndDate: 'edu'
   },
 
   isMultiBlockField(fieldType, element) {
@@ -906,9 +906,22 @@ const MultiBlockFiller = {
     } else if (blockType === 'edu') {
       switch (fieldType) {
         case 'eduSchool': return entry.school || '';
-        case 'eduDegree': return entry.degree || '';
+        case 'eduDegree': {
+          const rawDegree = entry.degree || '';
+          // Simple normalization map for Workday
+          const lower = rawDegree.toLowerCase();
+          if (lower.includes('bachelor') || lower.includes('bca') || lower.includes('b.tech') || lower.includes('b.sc') || lower.includes('bs')) return 'Bachelors';
+          if (lower.includes('master') || lower.includes('mca') || lower.includes('m.tech') || lower.includes('m.sc') || lower.includes('ms') || lower.includes('mba')) return 'Masters';
+          if (lower.includes('doctor') || lower.includes('phd')) return 'Doctorate';
+          if (lower.includes('associate')) return 'Associates';
+          if (lower.includes('ged')) return 'GED';
+          if (lower.includes('high school')) return 'High School Diploma';
+          if (lower.includes('diploma')) return 'Post Graduate Diploma'; // Fallback for diploma
+          return rawDegree;
+        }
         case 'eduField': return entry.field || '';
         case 'eduGradYear': return entry.graduationYear || '';
+        case 'eduGPA': return entry.gpa || '';
         case 'eduStartDate': return entry.startDate || '';
         case 'eduEndDate': return entry.endDate || '';
         default: return null;
@@ -1154,7 +1167,16 @@ const FormFiller = {
     }
   },
 
-  setFieldValue(element, value) {
+  async setFieldValue(element, value) {
+    // Workday/Special Dropdown Handling (Button-based listboxes)
+    if (element && (element.tagName === 'BUTTON' || element.getAttribute('role') === 'button') &&
+      (element.getAttribute('aria-haspopup') === 'listbox' || element.getAttribute('data-automation-id') === 'dropdown' || element.hasAttribute('data-uxi-widget-type'))) {
+      if (typeof WorkdayDropdownAdapter !== 'undefined') {
+        await WorkdayDropdownAdapter.selectOption(element, value);
+        return;
+      }
+    }
+
     const isContentEditable = element.contentEditable === 'true' || element.getAttribute('contenteditable') === 'true';
 
     if (isContentEditable) {
@@ -1321,7 +1343,7 @@ const FormFiller = {
       value = enhanced;
     }
 
-    this.setFieldValue(element, value);
+    await this.setFieldValue(element, value);
     return { success: true, value };
   },
 
@@ -1356,7 +1378,7 @@ const FormFiller = {
       if (templateFields) {
         const templateMatch = templateFields.find(tf => tf.selector && document.querySelector(tf.selector) === element);
         if (templateMatch && templateMatch.value) {
-          this.setFieldValue(element, templateMatch.value);
+          await this.setFieldValue(element, templateMatch.value);
           filledCount++;
           continue;
         }
@@ -1380,7 +1402,7 @@ const FormFiller = {
           } else if (element.type === 'checkbox') {
             this.setCheckboxValue(element, !!blockContext.value);
           } else {
-            this.setFieldValue(element, String(blockContext.value));
+            await this.setFieldValue(element, String(blockContext.value));
           }
           filledCount++;
           continue;
@@ -1395,10 +1417,10 @@ const FormFiller = {
     return { success: true, fieldsCount: filledCount };
   },
 
-  applyTemplate(template, profile) {
+  async applyTemplate(template, profile) {
     const fields = FieldDetector.getAllFields();
 
-    template.mappings.forEach(mapping => {
+    for (const mapping of template.mappings) {
       const field = fields.find(f =>
         f.id === mapping.fieldId ||
         f.name === mapping.fieldName ||
@@ -1412,9 +1434,9 @@ const FormFiller = {
         } else {
           value = this.getValueForField(mapping.fieldType, profile);
         }
-        this.setFieldValue(field.element, value);
+        await this.setFieldValue(field.element, value);
       }
-    });
+    }
   },
 
   fillFromImportedData(dataRow, dataHeaders) {

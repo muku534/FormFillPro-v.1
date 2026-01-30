@@ -2086,6 +2086,10 @@ body {
   margin-bottom: 12px;
 }
 
+.education-form-row.full-width {
+  grid-template-columns: 1fr;
+}
+
 .experience-form .profile-field,
 .education-form .profile-field {
   display: flex;

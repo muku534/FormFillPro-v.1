@@ -102,7 +102,10 @@ const UserProfileManager = {
 
     for (const section of Object.keys(merged)) {
       if (profile[section]) {
-        if (typeof merged[section] === 'object' && !Array.isArray(merged[section])) {
+        // If profile section is an array, override the default (even if default is object)
+        if (Array.isArray(profile[section])) {
+          merged[section] = profile[section];
+        } else if (typeof merged[section] === 'object' && !Array.isArray(merged[section])) {
           merged[section] = { ...merged[section], ...profile[section] };
         } else {
           merged[section] = profile[section];

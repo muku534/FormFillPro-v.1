@@ -714,10 +714,14 @@ class PopupController {
         </div>
         <div class="education-details">
           <span class="education-dates">
-            ${edu.startDate || ''}${edu.startDate && edu.endDate ? ' - ' : ''}${edu.endDate || ''}
-            ${(!edu.startDate && !edu.endDate && edu.graduationYear) ? edu.graduationYear : ''}
+            ${edu.startDate || ''} - ${edu.endDate || ''}
+            ${edu.graduationYear ? `(Grad: ${edu.graduationYear})` : ''}
           </span>
-          ${edu.field ? `<span class="education-field"> @ ${edu.field}</span>` : ''}
+          <div class="education-degree">
+            ${edu.degree} @ ${edu.school}
+          </div>
+          ${edu.field ? `<div class="education-field">Field: ${edu.field}</div>` : ''}
+          ${edu.gpa ? `<div class="education-field">GPA: ${edu.gpa}</div>` : ''}
         </div>
       </div>
     `).join('');
@@ -735,6 +739,7 @@ class PopupController {
     const field = document.getElementById('edu-field').value.trim();
     const school = document.getElementById('edu-school').value.trim();
     const graduationYear = document.getElementById('edu-year').value.trim();
+    const gpa = document.getElementById('edu-gpa').value.trim();
 
     if (!degree) {
       this.showToast('Please enter a degree');
@@ -748,6 +753,7 @@ class PopupController {
       field,
       school,
       graduationYear,
+      gpa,
       startDate: document.getElementById('edu-start').value.trim(),
       endDate: document.getElementById('edu-end').value.trim()
     };
@@ -767,6 +773,7 @@ class PopupController {
     document.getElementById('edu-field').value = '';
     document.getElementById('edu-school').value = '';
     document.getElementById('edu-year').value = '';
+    document.getElementById('edu-gpa').value = '';
     document.getElementById('edu-start').value = '';
     document.getElementById('edu-end').value = '';
   }
@@ -779,6 +786,7 @@ class PopupController {
     document.getElementById('edu-field').value = edu.field || '';
     document.getElementById('edu-school').value = edu.school || '';
     document.getElementById('edu-year').value = edu.graduationYear || '';
+    document.getElementById('edu-gpa').value = edu.gpa || '';
     document.getElementById('edu-start').value = edu.startDate || '';
     document.getElementById('edu-end').value = edu.endDate || '';
 

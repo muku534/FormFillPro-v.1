@@ -39,12 +39,13 @@ window.FieldDetector = {
         workExpCurrentJob: { attributes: ['current-job', 'currentjob', 'currently-working', 'currentlyworking', 'present', 'i-currently-work', 'still-working'], validFor: ['input'], autocomplete: [], isWorkExp: true },
 
         // Education fields
-        eduSchool: { attributes: ['school', 'university', 'college', 'institution', 'academy', 'education'], validFor: ['input'], autocomplete: ['organization'], isEdu: true },
-        eduDegree: { attributes: ['degree', 'qualification', 'diploma', 'certification'], validFor: ['input', 'select'], autocomplete: [], isEdu: true },
+        eduSchool: { attributes: ['school', 'university', 'college', 'institution', 'academy'], validFor: ['input'], autocomplete: ['organization'], isEdu: true },
+        eduDegree: { attributes: ['degree', 'qualification', 'diploma', 'certification'], validFor: ['input', 'select', 'button'], autocomplete: [], isEdu: true },
         eduField: { attributes: ['field', 'major', 'study', 'discipline', 'subject', 'specialization'], validFor: ['input'], autocomplete: [], isEdu: true },
         eduGradYear: { attributes: ['gradyear', 'graduation', 'completed', 'finished'], validFor: ['input', 'number', 'select'], autocomplete: [], isEdu: true },
         eduStartDate: { attributes: ['edustart', 'edu-start', 'edu_start'], validFor: ['input', 'date', 'month'], autocomplete: [], isEdu: true, subType: 'start' },
-        eduEndDate: { attributes: ['eduend', 'edu-end', 'edu_end'], validFor: ['input', 'date', 'month'], autocomplete: [], isEdu: true, subType: 'end' }
+        eduEndDate: { attributes: ['eduend', 'edu-end', 'edu_end'], validFor: ['input', 'date', 'month'], autocomplete: [], isEdu: true, subType: 'end' },
+        eduGPA: { attributes: ['grade', 'gpa', 'average', 'score', 'result', 'cgd', 'cgpa'], validFor: ['input'], autocomplete: [], isEdu: true }
     },
 
     isDateField(el, labelText = '') {
@@ -593,7 +594,7 @@ window.FieldDetector = {
 
     findAllInputElements() {
         const elements = [];
-        const selector = 'input, select, textarea, [contenteditable="true"], [role="textbox"], [role="combobox"]';
+        const selector = 'input, select, textarea, [contenteditable="true"], [role="textbox"], [role="combobox"], button[aria-haspopup="listbox"], button[data-automation-id="dropdown"]';
 
         // Use recursive deep collection
         elements.push(...this.collectDeep(document, selector));

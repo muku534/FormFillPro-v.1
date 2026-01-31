@@ -218,9 +218,62 @@ const FakeDataGenerator = {
     return this.random(['United States', 'Canada', 'United Kingdom', 'Australia', 'Germany', 'France']);
   },
 
+  // Generate a single fake work experience entry
+  generateWorkExperience() {
+    const companies = ['Google', 'Microsoft', 'Amazon', 'Apple', 'Meta', 'Netflix', 'Tesla', 'Adobe', 'Salesforce', 'IBM', 'Oracle', 'Twitter', 'Uber', 'Spotify', 'Airbnb'];
+    const titles = ['Software Engineer', 'Senior Developer', 'Product Manager', 'Data Analyst', 'UX Designer', 'Frontend Developer', 'Backend Developer', 'Full Stack Developer', 'DevOps Engineer', 'Technical Lead', 'Project Manager', 'QA Engineer'];
+
+    const startYear = this.randomInt(2015, 2022);
+    const endYear = this.random([startYear + this.randomInt(1, 3), 'Present']);
+
+    return {
+      title: this.random(titles),
+      company: this.random(companies),
+      location: `${this.city()}, ${this.state(true)}`,
+      startDate: `${this.random(['January', 'March', 'June', 'September'])} ${startYear}`,
+      endDate: endYear === 'Present' ? 'Present' : `${this.random(['February', 'May', 'August', 'December'])} ${endYear}`,
+      current: endYear === 'Present',
+      description: `Worked on ${this.random(['web applications', 'mobile apps', 'backend systems', 'cloud infrastructure', 'data pipelines'])} using ${this.random(['React', 'Node.js', 'Python', 'Java', 'TypeScript', 'Go'])}. ${this.random(['Led a team of 5 developers', 'Improved system performance by 40%', 'Delivered 3 major features', 'Reduced deployment time by 50%'])}.`
+    };
+  },
+
+  // Generate a single fake education entry
+  generateEducation() {
+    const schools = ['Stanford University', 'MIT', 'Harvard University', 'UC Berkeley', 'Carnegie Mellon', 'Georgia Tech', 'University of Michigan', 'UCLA', 'Cornell University', 'University of Texas'];
+    const degrees = ['Bachelor of Science', 'Master of Science', 'Bachelor of Arts', 'Master of Business Administration'];
+    const majors = ['Computer Science', 'Software Engineering', 'Information Technology', 'Data Science', 'Business Administration', 'Electrical Engineering', 'Mathematics'];
+
+    const gradYear = this.randomInt(2010, 2023);
+
+    return {
+      school: this.random(schools),
+      degree: this.random(degrees),
+      major: this.random(majors),
+      graduationYear: String(gradYear),
+      startYear: String(gradYear - 4),
+      endYear: String(gradYear),
+      gpa: (this.randomInt(30, 40) / 10).toFixed(1)
+    };
+  },
+
   generateProfile() {
     const firstName = this.firstName();
     const lastName = this.lastName();
+
+    // Generate 1-3 work experiences
+    const workExperience = [];
+    const numJobs = this.randomInt(1, 3);
+    for (let i = 0; i < numJobs; i++) {
+      workExperience.push(this.generateWorkExperience());
+    }
+
+    // Generate 1-2 education entries
+    const education = [];
+    const numEdu = this.randomInt(1, 2);
+    for (let i = 0; i < numEdu; i++) {
+      education.push(this.generateEducation());
+    }
+
     return {
       firstName,
       lastName,
@@ -243,7 +296,9 @@ const FakeDataGenerator = {
       company: this.company(),
       jobTitle: this.jobTitle(),
       website: this.website(),
-      linkedIn: this.linkedIn(firstName, lastName)
+      linkedIn: this.linkedIn(firstName, lastName),
+      workExperience,
+      education
     };
   }
 };
@@ -1357,15 +1412,21 @@ const FormFiller = {
     if (allFields.length === 0) {
       return { success: false, message: 'No form fields found' };
     }
+
+    // 🎲 QUICK MODE: Use completely random fake data
+    const effectiveProfile = mode === 'quick'
+      ? FakeDataGenerator.generateProfile()
+      : profile;
+
     // Initialize block container mappers
     if (typeof BlockContainerMapper !== 'undefined') {
-      BlockContainerMapper.reset('work', profile.workExperience || []);
-      BlockContainerMapper.reset('edu', profile.education || []);
+      BlockContainerMapper.reset('work', effectiveProfile.workExperience || []);
+      BlockContainerMapper.reset('edu', effectiveProfile.education || []);
     }
 
     // 🔥 NEW: Dedicated Application Question pass (Parallel pipeline)
     if (typeof ApplicationQuestionFiller !== 'undefined') {
-      await ApplicationQuestionFiller.fillAllQuestions(profile, applicationQuestions);
+      await ApplicationQuestionFiller.fillAllQuestions(effectiveProfile, applicationQuestions);
     }
 
     let filledCount = 0;
@@ -1397,7 +1458,7 @@ const FormFiller = {
 
       // D. Handle multi-block fields (Work Exp, Education)
       if (typeof MultiBlockFiller !== 'undefined') {
-        const blockContext = MultiBlockFiller.getFieldWithContext(field, profile);
+        const blockContext = MultiBlockFiller.getFieldWithContext(field, effectiveProfile);
         if (blockContext.isMultiBlock && blockContext.value !== null && blockContext.value !== '') {
           const tagName = element.tagName.toLowerCase();
           if (tagName === 'select') {
@@ -1413,7 +1474,7 @@ const FormFiller = {
       }
 
       // E. Fallback to regular field filling (Always try if not already filled)
-      await this.fillField(element, field.detectedType, profile);
+      await this.fillField(element, field.detectedType, effectiveProfile);
       filledCount++;
     }
 
@@ -2004,6 +2065,31 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   } else if (message.action === 'closeWidget') {
     FormFillWidget.hide();
     sendResponse({ success: true });
+  } else if (message.action === 'quickFill') {
+    // Quick fill with fake data for specific field types
+    const profile = FakeDataGenerator.generateProfile();
+    const typeMapping = {
+      email: ['email'],
+      phone: ['phone', 'tel'],
+      address: ['address', 'street', 'city', 'state', 'zipCode', 'zip', 'postalCode', 'country'],
+      name: ['firstName', 'lastName', 'fullName', 'name'],
+      password: ['password', 'confirmPassword', 'newPassword'],
+      card: ['creditCard', 'cardNumber', 'cvv', 'cvc', 'expirationDate', 'expirationMonth', 'expirationYear', 'expMonth', 'expYear']
+    };
+
+    const targetTypes = typeMapping[message.fillType] || [];
+    const fields = FieldDetector.getAllFields();
+    let filledCount = 0;
+
+    fields.forEach(field => {
+      if (targetTypes.includes(field.detectedType)) {
+        FormFiller.fillField(field.element, field.detectedType, profile);
+        filledCount++;
+      }
+    });
+
+    console.log(`[QuickFill] Filled ${filledCount} ${message.fillType} fields`);
+    sendResponse({ success: true, filled: filledCount });
   }
   return true;
 });

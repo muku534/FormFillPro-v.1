@@ -1591,10 +1591,12 @@ Write a professional response in first person as the applicant. Be concise but s
           }
 
           // Construct the final data profile for filling
-          const education = profile?.education || [];
-          const workExperience = profile?.workExperience || [];
+          // IMPORTANT: For Quick mode, use empty profile so FakeDataGenerator creates all data
+          const baseProfile = mode === 'quick' ? {} : profile;
+          const education = baseProfile?.education || [];
+          const workExperience = baseProfile?.workExperience || [];
 
-          const fakeProfile = {
+          const fakeProfile = mode === 'quick' ? {} : {
             ...profile,
             workExperience,
             education,
@@ -1648,35 +1650,20 @@ Write a professional response in first person as the applicant. Be concise but s
     try {
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
-      await chrome.scripting.executeScript({
-        target: { tabId: tab.id, allFrames: true },
-        args: [type],
-        func: (fillType) => {
-          const profile = FakeDataGenerator.generateProfile();
-          const typeMapping = {
-            email: ['email'],
-            phone: ['phone'],
-            address: ['address', 'city', 'state', 'zipCode', 'country'],
-            name: ['firstName', 'lastName', 'fullName'],
-            password: ['password', 'confirmPassword'],
-            card: ['creditCard', 'cvv', 'expirationDate', 'expirationMonth', 'expirationYear']
-          };
-
-          const targetTypes = typeMapping[fillType] || [];
-          const fields = FieldDetector.getAllFields();
-
-          fields.forEach(field => {
-            if (targetTypes.includes(field.detectedType)) {
-              FormFiller.fillField(field.element, field.detectedType, profile);
-            }
-          });
-        }
+      // Use sendMessage to communicate with content script which has access to FakeDataGenerator
+      const response = await chrome.tabs.sendMessage(tab.id, {
+        action: 'quickFill',
+        fillType: type
       });
 
-      this.showToast(`${type} fields filled!`);
+      if (response && response.success) {
+        this.showToast(`Filled ${response.filled || 0} ${type} field(s)!`);
+      } else {
+        this.showToast('No matching fields found');
+      }
     } catch (error) {
       console.error('Quick fill error:', error);
-      this.showToast('Error filling fields');
+      this.showToast('Error filling fields. Make sure page is loaded.');
     }
   }
 

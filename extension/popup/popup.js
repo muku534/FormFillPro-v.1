@@ -305,6 +305,7 @@ class PopupController {
       'authorizedToWork', 'requiresSponsorship', 'futureSponsorship',
       'currentlyEmployedAtCompany', 'previouslyEmployedAtCompany', 'previousGovernmentEmployee',
       'isOver18', 'isOver21', 'veteranStatus', 'militarySpouse', 'disabilityStatus', 'gender',
+      'ethnicity', 'hispanicOrLatino',
       'salaryExpectation', 'hourlyRate', 'startDate', 'noticePeriod',
       'willingToRelocate', 'canWorkRemote', 'canWorkOnsite', 'canWorkHybrid',
       'availableForTravel', 'travelPercentage',
@@ -329,6 +330,7 @@ class PopupController {
       'authorizedToWork', 'requiresSponsorship', 'futureSponsorship',
       'currentlyEmployedAtCompany', 'previouslyEmployedAtCompany', 'previousGovernmentEmployee',
       'isOver18', 'isOver21', 'veteranStatus', 'militarySpouse', 'disabilityStatus', 'gender',
+      'ethnicity', 'hispanicOrLatino',
       'salaryExpectation', 'hourlyRate', 'startDate', 'noticePeriod',
       'willingToRelocate', 'canWorkRemote', 'canWorkOnsite', 'canWorkHybrid',
       'availableForTravel', 'travelPercentage',
@@ -551,6 +553,12 @@ class PopupController {
       resume: document.getElementById('profile-resume').value.trim(),
       coverLetter: document.getElementById('profile-coverLetter').value.trim(),
       additionalNotes: document.getElementById('profile-additionalNotes').value.trim(),
+      // EEO Fields (Sync with App Questions)
+      gender: document.getElementById('appq-gender')?.value || '',
+      veteranStatus: document.getElementById('appq-veteranStatus')?.value || '',
+      ethnicity: document.getElementById('appq-ethnicity')?.value || '',
+      hispanicOrLatino: document.getElementById('appq-hispanicOrLatino')?.value || '',
+      disabilityStatus: document.getElementById('appq-disabilityStatus')?.value || '',
       workExperience: this.userProfile.workExperience || [],
       education: this.userProfile.education || [],
       resumeFile: existingResumeFile

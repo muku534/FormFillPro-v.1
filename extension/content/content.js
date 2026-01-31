@@ -1052,6 +1052,9 @@ const FormFiller = {
       birthDate: profile.birthDate,
       age: String(profile.age || ''),
       gender: profile.gender,
+      veteranStatus: profile.veteranStatus,
+      ethnicity: profile.ethnicity,
+      disabilityStatus: profile.disabilityStatus,
       subject: FakeDataGenerator.subject(),
       creditCard: FakeDataGenerator.creditCard(),
       cvv: FakeDataGenerator.cvv(),
@@ -1613,13 +1616,21 @@ const WorkdayDropdownAdapter = {
     try {
       console.log(`[WorkdayAdapter] Attempting to fill: "${answer}"`);
 
+      // 0. CLOSE ANY EXISTING OPEN DROPDOWN first
+      const existingListbox = document.querySelector('[role="listbox"], [role="menu"]');
+      if (existingListbox && existingListbox.getBoundingClientRect().height > 0) {
+        console.log('[WorkdayAdapter] Closing existing dropdown...');
+        document.body.click(); // Click away to close
+        await new Promise(r => setTimeout(r, 300));
+      }
+
       // 1. Open dropdown with Retry Logic
       let listbox = null;
       for (let attempt = 1; attempt <= 3; attempt++) {
         if (attempt > 1) console.log(`[WorkdayAdapter] Retry attempt ${attempt} for "${answer}"...`);
 
         button.scrollIntoView({ block: 'center' });
-        await new Promise(r => setTimeout(r, 150 + (attempt * 50)));
+        await new Promise(r => setTimeout(r, 200 + (attempt * 100)));
 
         // Modern React/Workday often needs pointer events
         button.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
@@ -1628,7 +1639,7 @@ const WorkdayDropdownAdapter = {
         button.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
         button.click();
 
-        // 2. Wait for Dropdown (using Deep Scan)
+        // 2. Wait for NEW Dropdown to appear (associated with this button)
         const waitForListbox = async (timeout = 2500) => {
           const start = Date.now();
           while (Date.now() - start < timeout) {
@@ -1672,22 +1683,69 @@ const WorkdayDropdownAdapter = {
       const normalize = s => s.toLowerCase().replace(/[^a-z0-9]/g, '').trim();
       const normalizedAnswer = normalize(answer);
 
-      let option = options.find(opt => {
-        const optText = normalize(opt.innerText);
-        return optText === normalizedAnswer ||
-          optText.includes(normalizedAnswer) ||
-          normalizedAnswer.includes(optText);
-      });
+      // DEBUG: Log all available options with their normalized form
+      console.log(`[WorkdayAdapter] Looking for: "${answer}" (normalized: "${normalizedAnswer}")`);
+      options.forEach((o, i) => console.log(`[WorkdayAdapter] Option ${i}: "${o.innerText}" -> normalized: "${normalize(o.innerText)}"`));
 
-      // Yes/No fallback logic
+      // SYNONYMS: Map user answers to possible Workday option phrases
+      const semanticMatchers = {
+        // Veteran "Yes" = "I identify as..." or "I am a protected veteran"
+        'yes': (optText) => optText.includes('yes') ||
+          optText.startsWith('iidentifyasoneormore') ||
+          optText.startsWith('iidentifyasa') && !optText.includes('justnotaprotected') ||
+          (optText.includes('iam') && !optText.includes('iamnot')),
+        // Veteran "No" = "I am not a veteran"
+        'no': (optText) => optText === 'no' || optText.startsWith('iamnot') || optText.startsWith('iamnotaveteran'),
+        // Gender
+        'male': (optText) => optText === 'male' || optText.startsWith('male') || (optText.includes('male') && !optText.includes('female')),
+        'female': (optText) => optText === 'female' || optText.startsWith('female') || optText.includes('female'),
+        // Prefer not to say / Decline
+        'prefernottosay': (optText) => optText.includes('idonotwanttoanswer') || optText.includes('idonotwish') || optText.includes('prefernot') || optText.includes('declinetostate'),
+      };
+
+      // A. Try EXACT MATCH first
+      let option = options.find(opt => normalize(opt.innerText) === normalizedAnswer);
+      if (option) console.log(`[WorkdayAdapter] EXACT match found`);
+
+      // B. Try SEMANTIC matcher
+      if (!option && semanticMatchers[normalizedAnswer]) {
+        option = options.find(opt => semanticMatchers[normalizedAnswer](normalize(opt.innerText)));
+        if (option) console.log(`[WorkdayAdapter] SEMANTIC match found`);
+      }
+
+      // C. Try SUBSTRING match (with safeguards)
       if (!option) {
-        const isYes = ApplicationQuestionFiller.isAffirmativeAnswer ? ApplicationQuestionFiller.isAffirmativeAnswer(answer) : ['yes', 'y'].includes(normalizedAnswer);
-        const patterns = isYes ? ['yes', 'ido', 'iam', 'ihave', 'agree', 'authorize', 'consent'] : ['no', 'idonot', 'iamnot', 'disagree', 'decline'];
-
         option = options.find(opt => {
           const optText = normalize(opt.innerText);
-          return patterns.some(p => optText === p || optText.startsWith(p));
+          if (normalizedAnswer === 'male' && optText.includes('female')) return false;
+          if (normalizedAnswer === 'yes' && (optText.includes('iamnot') || optText.includes('idonot'))) return false;
+          return optText.includes(normalizedAnswer) || normalizedAnswer.includes(optText);
         });
+        if (option) console.log(`[WorkdayAdapter] SUBSTRING match found`);
+      }
+
+      // D. Fallback for verbose Workday options (e.g., "I am a protected veteran")
+      if (!option) {
+        const isYes = ApplicationQuestionFiller.isAffirmativeAnswer ? ApplicationQuestionFiller.isAffirmativeAnswer(answer) : ['yes', 'y'].includes(normalizedAnswer);
+        if (isYes) {
+          option = options.find(opt => {
+            const optText = normalize(opt.innerText);
+            return (optText.includes('iam') || optText.includes('ihave') || optText.includes('yes')) && !optText.includes('iamnot') && !optText.includes('ihavenot') && !optText.includes('not');
+          });
+          if (option) console.log(`[WorkdayAdapter] AFFIRMATIVE fallback match found`);
+        }
+      }
+
+      // E. LAST RESORT: Pick first non-placeholder option
+      if (!option && options.length > 0) {
+        const validOptions = options.filter(o => {
+          const text = normalize(o.innerText);
+          return text && text !== 'selectone' && text !== 'select' && text !== '' && text !== 'pleaseselect';
+        });
+        if (validOptions.length > 0) {
+          console.warn(`[WorkdayAdapter] Using FIRST VALID option as fallback`);
+          // Don't auto-select - just log for now to avoid wrong selections
+        }
       }
 
       if (option) {
@@ -2305,7 +2363,10 @@ Write a professional response in first person. Be concise but substantive. Respo
       password: FakeDataGenerator.password(),
       birthDate: FakeDataGenerator.birthDate(),
       age: FakeDataGenerator.age(),
-      gender: FakeDataGenerator.gender(),
+      gender: userProfile.gender || FakeDataGenerator.gender(),
+      ethnicity: userProfile.ethnicity || '',
+      veteranStatus: userProfile.veteranStatus || '',
+      disabilityStatus: userProfile.disabilityStatus || '',
       address: {
         street: userProfile.address || FakeDataGenerator.streetAddress(),
         city: userProfile.city || FakeDataGenerator.city(),
